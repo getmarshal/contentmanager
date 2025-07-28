@@ -38,7 +38,7 @@ class FetchContentCommand extends Command implements EventDispatcherAwareInterfa
         ]);
         $this->getEventDispatcher()->dispatch($event);
 
-        if (! $event->hasResult()) {
+        if (! $event->hasContent()) {
             $io->error("Content not found");
             return Command::FAILURE;
         }

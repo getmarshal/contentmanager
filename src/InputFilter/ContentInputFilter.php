@@ -33,26 +33,12 @@ class ContentInputFilter extends InputFilter
             if ($property->hasRelation()) {
                 $input->setAllowEmpty(FALSE)->setRequired(TRUE);
             } else {
-                $input->setAllowEmpty($property->getNotNull())->setRequired($property->getNotNull());
+                $input->setAllowEmpty($property->getNotNull())
+                    ->setRequired($property->getNotNull());
             }
 
             // append the input to theinput filter
             $this->add($input);
         }
-    }
-
-    public function setData($data): static
-    {
-        foreach ($this->content->getType()->getProperties() as $property)
-        {
-            if (! isset($data[$property->getIdentifier()])) {
-                $propertyValue = $property->getValue();
-                $data[$property->getIdentifier()] = $propertyValue instanceof Content ? $propertyValue->toArray() : $propertyValue;
-            }
-        }
-
-        parent::setData($data);
-
-        return $this;
     }
 }

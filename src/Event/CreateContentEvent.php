@@ -9,20 +9,22 @@ declare(strict_types=1);
 namespace Marshal\ContentManager\Event;
 
 use Marshal\ContentManager\Content;
+use Marshal\EventManager\ErrorMessagesTrait;
+use Marshal\EventManager\EventParametersTrait;
 
 class CreateContentEvent
 {
+    use ErrorMessagesTrait;
+    use EventParametersTrait;
+
     private Content $content;
-    public bool $isCreated = false;
-    public string $logMessage = "Content created";
+    public string $logMessage;
+    public bool $saveMeta = FALSE;
 
-    public function __construct(private string $contentIdentifier, private array $params, private bool $createMeta = TRUE)
+    public function __construct(private string $contentIdentifier, array $params)
     {
-    }
-
-    public function getCreateMeta(): bool
-    {
-        return $this->createMeta;
+        $this->setParams($params);
+        $this->logMessage = "Content created: $contentIdentifier";
     }
 
     public function getContent(): Content
@@ -35,19 +37,14 @@ class CreateContentEvent
         return $this->contentIdentifier;
     }
 
-    public function getParams(): array
-    {
-        return $this->params;
-    }
-
     public function getLogMessage(): string
     {
         return $this->logMessage;
     }
 
-    public function isFailure(): bool
+    public function getSaveMeta(): bool
     {
-        return ! $this->isSuccess();
+        return $this->saveMeta;
     }
 
     public function isSuccess(): bool
@@ -55,8 +52,15 @@ class CreateContentEvent
         return isset($this->content);
     }
 
-    public function setContent(Content $content): void
+    public function saveMeta(): static
+    {
+        $this->saveMeta = TRUE;
+        return $this;
+    }
+
+    public function setContent(Content $content): static
     {
         $this->content = $content;
+        return $this;
     }
 }

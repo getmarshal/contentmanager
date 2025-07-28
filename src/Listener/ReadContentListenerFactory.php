@@ -12,13 +12,12 @@ class ReadContentListenerFactory
 {
     public function __invoke(ContainerInterface $container): ReadContentListener
     {
+        $connectionFactory = new ConnectionFactory($container->get('config')['database']);
         $contentManager = $container->get(ContentManager::class);
         if (! $contentManager instanceof ContentManager) {
-            throw new \RuntimeException("Invalid content manager");
+            throw new \RuntimeException("Invalid ContentManager");
         }
 
-        $connectionFactory = new ConnectionFactory($container->get('config')['database']);
-
-        return new ReadContentListener($contentManager, $connectionFactory);
+        return new ReadContentListener($connectionFactory, $contentManager);
     }
 }

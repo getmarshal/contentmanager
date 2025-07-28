@@ -33,7 +33,7 @@ class Content
         return $this->getConfig()->getType();
     }
 
-    public function hydrate(array $row, AbstractPlatform $databasePlatform): void
+    public function hydrate(array $row, ?AbstractPlatform $databasePlatform = NULL): static
     {
         foreach ($row as $key => $value) {
             foreach ($this->getType()->getProperties() as $property) {
@@ -42,14 +42,18 @@ class Content
                 }
 
                 if (! $property->hasRelation()) {
-                    $property->setValue(
-                        $property->getDatabaseType()->convertToPHPValue($value, $databasePlatform)
-                    );
+                    NULL === $databasePlatform
+                        ? $property->setValue($value)
+                        : $property->setValue(
+                            $property->getDatabaseType()->convertToPHPValue($value, $databasePlatform)
+                        );
                 } else {
                     $property->setValue($this->hydrateRelation($property, $row));
                 }
             }
         }
+
+        return $this;
     }
 
     public function toArray(): array
@@ -69,6 +73,11 @@ class Content
     {
         $content = new self($property->getRelation()->getRelationConfig());
         if (! isset($data[$property->getIdentifier()])) {
+            return $content;
+        }
+
+        if (\is_int($data[$property->getIdentifier()])) {
+            $content->getType()->getAutoIncrement()->setValue($data[$property->getIdentifier()]);
             return $content;
         }
 

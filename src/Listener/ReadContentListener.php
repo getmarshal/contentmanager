@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Marshal\ContentManager\Listener;
 
+use loophp\collection\Collection;
 use Marshal\ContentManager\ContentManager;
 use Marshal\ContentManager\Event\ReadCollectionEvent;
 use Marshal\ContentManager\Event\ReadContentEvent;
@@ -12,10 +13,8 @@ use Marshal\EventManager\EventListenerInterface;
 
 class ReadContentListener implements EventListenerInterface
 {
-    public function __construct(
-        private ContentManager $contentManager,
-        private ConnectionFactory $connectionFactory,
-    ) {
+    public function __construct(private ConnectionFactory $connectionFactory, private ContentManager $contentManager)
+    {
     }
 
     public function getListeners(): array
@@ -33,28 +32,49 @@ class ReadContentListener implements EventListenerInterface
             $content->getType()->getDatabase()
         );
 
-        $data = $connection->getRepository()->filter(
+        $collection = $connection->getRepository()->filter(
             $content->getType(),
             $event->getParams()
-        )->executeQuery()->iterateAssociative();
+        );
 
-        $event->setResult($data);
+        foreach ($event->getWhere() as $expression => $parameters) {
+            $collection->andWhere($expression);
+            foreach ($parameters as $key => $value) {
+                $collection->setParameter($key, $value);
+            }
+        }
+
+        foreach ($event->getGroupBy() as $expression) {
+            $collection->addGroupBy($expression);
+        }
+
+        foreach ($event->getOrderBy() as $column => $direction) {
+            $collection->addOrderBy($column, $direction);
+        }
+
+        $collection->setFirstResult($event->getOffset())
+            ->setMaxResults($event->getLimit());
+
+        $iterable = $collection->executeQuery()->iterateAssociative();
+        $platform = $connection->getDatabasePlatform();
+        $result = Collection::fromCallable(static function () use ($iterable, $event, $content, $platform): \Generator {
+            foreach ($iterable as $row) {
+                yield $event->getToArray()
+                    ? $content->hydrate($row, $platform)->toArray()
+                    : $content->hydrate($row, $platform);
+            }
+        });
+        $event->setData($result);
     }
 
     public function onReadContent(ReadContentEvent $event): void
     {
         $content = $this->contentManager->get($event->getContentIdentifier());
-        $connection = $this->connectionFactory->getConnection(
-            $content->getType()->getDatabase()
-        );
-        $result = $connection->getRepository()->get(
-            $content->getType(),
-            $event->getParams()
-        );
-
+        $connection = $this->connectionFactory->getConnection($content->getType()->getDatabase());
+        $result = $connection->getRepository()->get($content->getType(), $event->getParams());
         if (! empty($result)) {
-            $content->hydrate($result, $connection->getDatabasePlatform());
-            $event->setContent($content);
+            $event->setRawResult($result);
+            $event->setContent($content->hydrate($result, $connection->getDatabasePlatform()));
         }
     }
 }

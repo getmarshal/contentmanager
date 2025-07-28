@@ -1,7 +1,6 @@
 {
     "name": "marshal/contentmanager",
     "description": "Content manager module for Marshal",
-    "version": "1.0.0",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -9,6 +8,7 @@
             "Marshal\\ContentManager\\": "src/"
         }
     },
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Collins Pamba",
@@ -23,6 +23,7 @@
     ],
     "require": {
         "marshal/database": "dev-master",
-        "laminas/laminas-inputfilter": "^2.33"
+        "laminas/laminas-inputfilter": "^2.33",
+        "loophp/collection": "dev-master"
     }
 }

@@ -9,41 +9,61 @@ declare(strict_types=1);
 namespace Marshal\ContentManager\Event;
 
 use Marshal\ContentManager\Content;
+use Marshal\EventManager\EventParametersTrait;
 
 class ReadContentEvent
 {
-    private Content $result;
+    use EventParametersTrait;
 
-    public function __construct(private string $contentIndentifier, private array $params)
+    private Content $content;
+    private array $rawResult = [];
+    private array $where = [];
+
+    public function __construct(private string $contentIdentifier, array $params = [])
     {
+        $this->setParams($params);
     }
 
     public function getContentIdentifier(): string
     {
-        return $this->contentIndentifier;
+        return $this->contentIdentifier;
     }
 
-    public function getParams(): array
+    public function getRawResult(): array
     {
-        return $this->params;
+        return $this->rawResult;
     }
 
-    public function hasResult(): bool
+    public function hasContent(): bool
     {
-        return isset($this->result);
+        return isset($this->content);
     }
 
     public function getContent(): Content
     {
-        if (! $this->hasResult()) {
-            throw new \RuntimeException("Result not found");
-        }
-
-        return $this->result;
+        return $this->content;
     }
 
-    public function setContent(Content $content): void
+    public function getWhere(): array
     {
-        $this->result = $content;
+        return $this->where;
+    }
+
+    public function setContent(Content $content): static
+    {
+        $this->content = $content;
+        return $this;
+    }
+
+    public function setRawResult(array $result): static
+    {
+        $this->rawResult = $result;
+        return $this;
+    }
+
+    public function where(string $expression, array $parameters = []): static
+    {
+        $this->where[$expression] = $parameters;
+        return $this;
     }
 }
