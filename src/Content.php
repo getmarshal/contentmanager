@@ -5,38 +5,86 @@ declare(strict_types=1);
 namespace Marshal\ContentManager;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Marshal\Database\Schema\Property;
-use Marshal\Database\Schema\Type;
+use Marshal\ContentManager\Schema\Property;
 
 class Content
 {
-    public function __construct(private ContentConfig $config)
-    {
+    public function __construct(
+        private string $database,
+        private string $table,
+        private array $config,
+        private array $properties
+    ) {
     }
 
     public function get(string $property, mixed $default = null): mixed
     {
-        if (! $this->getType()->hasProperty($property)) {
+        if (! $this->hasProperty($property)) {
             return $default;
         }
 
-        return $this->getType()->getProperty($property)->getValue();
+        return $this->getProperty($property)->getValue();
     }
 
-    public function getConfig(): ContentConfig
+    public function getAutoIncrement(): Property
     {
-        return $this->config;
+        foreach ($this->properties as $property) {
+            if ($property->isAutoIncrement()) {
+                return $property;
+            }
+        }
+
+        throw new \InvalidArgumentException("no autoincrement property");
     }
 
-    public function getType(): Type
+    public function getDatabase(): string
     {
-        return $this->getConfig()->getType();
+        return $this->database;
+    }
+
+    public function getIdentifier(): string
+    {
+        return "{$this->getDatabase()}::{$this->getTable()}";
+    }
+
+    /**
+     * @return Property[]
+     */
+    public function getProperties(): array
+    {
+        return $this->properties;
+    }
+
+    public function getProperty(string $property): Property
+    {
+        if (! $this->hasProperty($property)) {
+            throw new \InvalidArgumentException(
+                "Missing property $property on type {$this->getIdentifier()}"
+            );
+        }
+
+        return $this->properties[$property];
+    }
+
+    public function getTable(): string
+    {
+        return $this->table;
+    }
+
+    public function getValidators(): array
+    {
+        return $this->config['validators'] ?? [];
+    }
+
+    public function hasProperty(string $property): bool
+    {
+        return isset($this->properties[$property]);
     }
 
     public function hydrate(array $row, ?AbstractPlatform $databasePlatform = NULL): static
     {
         foreach ($row as $key => $value) {
-            foreach ($this->getType()->getProperties() as $property) {
+            foreach ($this->getProperties() as $property) {
                 if ($key !== $property->getIdentifier()) {
                     continue;
                 }
@@ -59,7 +107,7 @@ class Content
     public function toArray(): array
     {
         $values = [];
-        foreach ($this->getType()->getProperties() as $property) {
+        foreach ($this->getProperties() as $property) {
             $value = $property->getValue();
             $values[$property->getIdentifier()] = $value instanceof self
                 ? $value->toArray()
@@ -71,24 +119,32 @@ class Content
 
     private function hydrateRelation(Property $property, array $data): self
     {
-        $content = new self($property->getRelation()->getRelationConfig());
+        $content = $property->getRelation()->getSchema();
         if (! isset($data[$property->getIdentifier()])) {
             return $content;
         }
 
+        if ($data[$property->getIdentifier()] instanceof self) {
+            return $data[$property->getIdentifier()];
+        }
+
         if (\is_int($data[$property->getIdentifier()])) {
-            $content->getType()->getAutoIncrement()->setValue($data[$property->getIdentifier()]);
+            $content->getAutoIncrement()->setValue($data[$property->getIdentifier()]);
             return $content;
         }
 
-        try {
-            $value = \json_decode(
-                $data[$property->getIdentifier()],
-                TRUE,
-                flags: JSON_THROW_ON_ERROR
-            );
-        } catch (\Throwable) {
-            return $content;
+        if (\is_array($data[$property->getIdentifier()])) {
+            $value = $data[$property->getIdentifier()];
+        } else {
+            try {
+                $value = \json_decode(
+                    $data[$property->getIdentifier()],
+                    TRUE,
+                    flags: JSON_THROW_ON_ERROR
+                );
+            } catch (\Throwable) {
+                return $content;
+            }
         }
 
         if (! \is_array($value)) {
@@ -96,7 +152,7 @@ class Content
         }
 
         foreach ($value as $k => $v) {
-            foreach ($content->getType()->getProperties() as $relationProperty) {
+            foreach ($content->getProperties() as $relationProperty) {
                 if ($k !== $relationProperty->getIdentifier()) {
                     continue;
                 }

@@ -12,7 +12,7 @@ class ContentInputFilter extends InputFilter
 {
     public function __construct(private Content $content)
     {
-        foreach ($content->getType()->getProperties() as $property) {
+        foreach ($content->getProperties() as $property) {
             if ($property->isAutoIncrement()) {
                 continue;
             }

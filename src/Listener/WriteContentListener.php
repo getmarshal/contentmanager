@@ -6,15 +6,15 @@ namespace Marshal\ContentManager\Listener;
 
 use Laminas\Validator\ValidatorPluginManager;
 use Marshal\ContentManager\ContentManager;
+use Marshal\ContentManager\ContentRepository;
 use Marshal\ContentManager\Event\CreateContentEvent;
 use Marshal\ContentManager\Event\DeleteCollectionEvent;
 use Marshal\ContentManager\Event\DeleteContentEvent;
 use Marshal\ContentManager\Event\UpdateContentEvent;
 use Marshal\ContentManager\InputFilter\ContentInputFilter;
-use Marshal\Database\ConnectionFactory;
 use Marshal\EventManager\EventListenerInterface;
-use Marshal\Logger\LoggerFactoryAwareInterface;
-use Marshal\Logger\LoggerFactoryTrait;
+use Marshal\Util\Logger\LoggerFactoryAwareInterface;
+use Marshal\Util\Logger\LoggerFactoryTrait;
 
 class WriteContentListener implements EventListenerInterface, LoggerFactoryAwareInterface
 {
@@ -23,7 +23,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
     private const string CONTENT_LOGGER = 'marshal::content';
 
     public function __construct(
-        private ConnectionFactory $connectionFactory,
+        private ContentRepository $contentRepository,
         private ContentManager $contentManager,
         private ValidatorPluginManager $validatorPluginManager
     ) {
@@ -47,29 +47,23 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         $inputFilter->setData($event->getParams());
         if (! $inputFilter->isValid()) {
             $event->setErrorMessages($inputFilter->getMessages());
-            $this->getLogger(self::CONTENT_LOGGER)->info("Invalid content input", $inputFilter->getMessages());
             return;
         }
 
         // additional validators
-        foreach ($content->getConfig()->getValidators() as $name => $options) {
+        foreach ($content->getValidators() as $name => $options) {
+            $options['__operation'] = 'create';
             $validator = $this->validatorPluginManager->get($name, $options);
             if (! $validator->isValid($inputFilter->getValues())) {
                 $event->setErrorMessages($validator->getMessages());
-                $this->getLogger(self::CONTENT_LOGGER)->info("Invalid content input", $validator->getMessages());
                 return;
             }
         }
 
-        // get the connection
-        $connection = $this->connectionFactory->getConnection(
-            $content->getType()->getDatabase()
-        );
-
-        // hydrate the content with the validated input
+        // hydrate the content with the filtered, validated input
         $content->hydrate($inputFilter->getValues());
 
-        $result = $connection->getRepository()->create($content->getType());
+        $result = $this->contentRepository->create($content);
         if (! \is_numeric($result)) {
             $event->setErrorMessage('create', "Error saving content");
             $this->getLogger(self::CONTENT_LOGGER)
@@ -77,7 +71,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
             return;
         }
 
-        $content->getType()->getAutoIncrement()->setValue(\intval($connection->lastInsertId()));
+        $content->getAutoIncrement()->setValue(\intval($result));
         $event->setContent($content);
     }
 
@@ -85,9 +79,8 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
     {
         $content = $event->getContent();
 
-        $connection = $this->connectionFactory->getConnection($content->getType()->getDatabase());
-        $query = $connection->getRepository()->delete($content->getType(), [
-            $content->getType()->getAutoIncrement()->getIdentifier() => $content->getType()->getAutoIncrement()->getValue(),
+        $query = $this->contentRepository->delete($content, [
+            $content->getAutoIncrement()->getIdentifier() => $content->getAutoIncrement()->getValue(),
         ]);
 
         $result = $query->executeStatement();
@@ -102,8 +95,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
 
         // @todo reject invalid params
 
-        $connection = $this->connectionFactory->getConnection($content->getType()->getDatabase());
-        $query = $connection->getRepository()->delete($content->getType(), $event->getParams());
+        $query = $this->contentRepository->delete($content, $event->getParams());
 
         $result = $query->executeStatement();
         if (\is_numeric($result)) {
@@ -121,7 +113,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         // set the validation group
         $validationGroup = [];
         foreach (\array_keys($event->getParams()) as $name) {
-            if (! $content->getType()->hasProperty($name) || ! $inputFilter->has($name)) {
+            if (! $content->hasProperty($name) || ! $inputFilter->has($name)) {
                 continue;
             }
 
@@ -138,7 +130,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         }
 
         // additional validators
-        foreach ($content->getConfig()->getValidators() as $name => $options) {
+        foreach ($content->getValidators() as $name => $options) {
             $options['__operation'] = 'update';
             $validator = $this->validatorPluginManager->get($name, $options);
             if (! $validator->isValid($inputFilter->getValues())) {
@@ -147,11 +139,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
             }
         }
 
-        $connection = $this->connectionFactory->getConnection(
-            $content->getType()->getDatabase()
-        );
-
-        $update = $connection->getRepository()->update($content->getType(), $inputFilter->getValues());
+        $update = $this->contentRepository->update($content, $inputFilter->getValues());
         if (! \is_numeric($update) || \intval($update) < 1) {
             $event->setErrorMessage('update', "Error updating content");
             $this->getLogger(self::CONTENT_LOGGER)->error("Error updating content", $event->getParams());

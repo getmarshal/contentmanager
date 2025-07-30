@@ -8,9 +8,21 @@ use Laminas\Validator\AbstractValidator;
 
 class ContentConfigValidator extends AbstractValidator
 {
-    public const string INVALID_CONFIG = 'invalidConfig';
+    private const string IDENTIFIER_NOT_FOUND = 'identifierNotFound';
+    private const string INVALID_CONFIG = 'invalidConfig';
+    private const string INVALID_CONTENT_IDENTIFIER = 'invalidContentIdentifier';
+    private const string INVALID_PROPERTIES_CONFIGURED = 'invalidPropertiesConfigured';
+    private const string INVALID_PROPERTY_NAME = 'invalidPropertyName';
+    private const string PROPERY_RELATION_SCHEMA_NOT_SPECIFIED = 'noPropertyRelationSchema';
+    private const string PROPERY_RELATION_PROPERTY_NOT_SPECIFIED = 'noPropertyRelationProperty';
     public array $messageTemplates = [
+        self::IDENTIFIER_NOT_FOUND => "Content identifier %value% not found in config",
         self::INVALID_CONFIG => 'Invalid config. Must be an an instance of ContentConfig',
+        self::INVALID_CONTENT_IDENTIFIER => 'Invalid content identifier %value%. Must contain format `database::table`',
+        self::INVALID_PROPERTIES_CONFIGURED => 'Content schema %value% properties empty or not configured',
+        self::INVALID_PROPERTY_NAME => 'Invalid property name %value%',
+        self::PROPERY_RELATION_SCHEMA_NOT_SPECIFIED => "Property relation %value% schema key not specified",
+        self::PROPERY_RELATION_PROPERTY_NOT_SPECIFIED => "Property relation %value% property key not specified",
     ];
 
     public function __construct(private array $config)
@@ -20,7 +32,8 @@ class ContentConfigValidator extends AbstractValidator
     public function isValid(mixed $value): bool
     {
         if (! isset($this->config[$value])) {
-            $this->error(self::INVALID_CONFIG);
+            $this->setValue($value);
+            $this->error(self::IDENTIFIER_NOT_FOUND);
             return FALSE;
         }
 
@@ -28,18 +41,20 @@ class ContentConfigValidator extends AbstractValidator
             return FALSE;
         }
 
-        if (! isset($this->config[$value]['properties'])) {
-            $this->error(self::INVALID_CONFIG);
+        if (! isset($this->config[$value]['properties']) || ! \is_array($this->config[$value]['properties'])) {
+            $this->setValue($value);
+            $this->error(self::INVALID_PROPERTIES_CONFIGURED);
             return FALSE;
         }
 
         foreach ($this->config[$value]['properties'] as $propertyName => $propertyConfig) {
             if (! \is_string($propertyName)) {
-                $this->error(self::INVALID_CONFIG);
+                $this->setValue(sprintf("%s on schema %s", \get_debug_type($propertyName), $value));
+                $this->error(self::INVALID_PROPERTY_NAME);
                 return FALSE;
             }
 
-            if (! $this->isValidProperty($propertyConfig)) {
+            if (! $this->isValidProperty($value, $propertyName, $propertyConfig)) {
                 return FALSE;
             }
         }
@@ -47,7 +62,7 @@ class ContentConfigValidator extends AbstractValidator
         return TRUE;
     }
 
-    private function isValidProperty(array $propertyConfig): bool
+    private function isValidProperty(string $schemaName, string $propertyName, array $propertyConfig): bool
     {
         if (isset($propertyConfig['index'])) {
             if (! \is_array($propertyConfig['index']) && ! \is_bool($propertyConfig['index'])) {
@@ -66,7 +81,7 @@ class ContentConfigValidator extends AbstractValidator
                 return FALSE;
             }
 
-            if (! $this->isValidPropertyRelation($propertyConfig['relation'])) {
+            if (! $this->isValidPropertyRelation($schemaName, $propertyName, $propertyConfig['relation'])) {
                 return FALSE;
             }
         }
@@ -76,14 +91,10 @@ class ContentConfigValidator extends AbstractValidator
 
     private function isValidPropertyIdentifier(string $identifier): bool
     {
-        if (! \is_string($identifier)) {
-            $this->error(self::INVALID_CONFIG);
-            return FALSE;
-        }
-
         $nameParts = \explode('::', $identifier);
         if (\count($nameParts) !== 2) {
-            $this->error(self::INVALID_CONFIG);
+            $this->setValue($identifier);
+            $this->error(self::INVALID_CONTENT_IDENTIFIER);
             return FALSE;
         }
 
@@ -99,21 +110,24 @@ class ContentConfigValidator extends AbstractValidator
         return TRUE;
     }
 
-    private function isValidPropertyRelation(array $relationConfig): bool
+    private function isValidPropertyRelation(string $schemaName, string $propertyName, array $relationConfig): bool
     {
-        if (! isset($relationConfig['schema'])) {
-            $this->error(self::INVALID_CONFIG);
-            return FALSE;
-        }
-
-        if (! isset($relationConfig['property'])) {
-            $this->error(self::INVALID_CONFIG);
+        if (! isset($relationConfig['schema']) || ! \is_string($relationConfig['schema'])) {
+            $this->setValue(\sprintf("%s on schema %s", $propertyName, $schemaName));
+            $this->error(self::PROPERY_RELATION_SCHEMA_NOT_SPECIFIED);
             return FALSE;
         }
 
         $split = \explode('::', $relationConfig['schema']);
         if (\count($split) !== 2) {
-            $this->error(self::INVALID_CONFIG);
+            $this->setValue(\sprintf("%s on schema %s", $relationConfig['schema'], $schemaName));
+            $this->error(self::INVALID_CONTENT_IDENTIFIER);
+            return FALSE;
+        }
+
+        if (! isset($relationConfig['property'])) {
+            $this->setValue(\sprintf("%s on schema %s", $propertyName, $schemaName));
+            $this->error(self::PROPERY_RELATION_PROPERTY_NOT_SPECIFIED);
             return FALSE;
         }
 

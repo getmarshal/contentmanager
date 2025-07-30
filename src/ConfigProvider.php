@@ -37,7 +37,7 @@ class ConfigProvider
                     \Marshal\EventManager\EventDispatcherDelegatorFactory::class,
                 ],
                 Listener\WriteContentListener::class => [
-                    \Marshal\Logger\LoggerFactoryDelegator::class,
+                    \Marshal\Util\Logger\LoggerFactoryDelegator::class,
                 ],
             ],
             'factories' => [
@@ -45,6 +45,7 @@ class ConfigProvider
                 Listener\ReadContentListener::class => Listener\ReadContentListenerFactory::class,
                 Listener\WriteContentListener::class => Listener\WriteContentListenerFactory::class,
                 ContentManager::class => ContentManagerFactory::class,
+                ContentRepository::class => ContentRepositoryFactory::class,
             ],
         ];
     }

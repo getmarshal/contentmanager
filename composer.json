@@ -9,6 +9,7 @@
         }
     },
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "authors": [
         {
             "name": "Collins Pamba",
@@ -18,12 +19,10 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../database"
+            "url": "../utils"
         }
     ],
-    "require": {
-        "marshal/database": "dev-master",
-        "laminas/laminas-inputfilter": "^2.33",
-        "loophp/collection": "dev-master"
+    "require-dev": {
+        "marshal/util": "dev-main"
     }
 }
