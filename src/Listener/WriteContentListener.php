@@ -41,6 +41,10 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
 
     public function onCreateContent(CreateContentEvent $event): void
     {
+        if ($event->hasContent()) {
+            return;
+        }
+
         $content = $this->contentManager->get($event->getContentIdentifier());
 
         $inputFilter = new ContentInputFilter($content);

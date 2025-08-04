@@ -6,7 +6,6 @@ namespace Marshal\ContentManager\Schema;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
-use Marshal\ContentManager\Content;
 
 final class Property
 {
@@ -25,6 +24,11 @@ final class Property
     public function getComment(): string
     {
         return $this->config->getComment();
+    }
+
+    public function getConvertToPhpType(): bool
+    {
+        return $this->config->getConvertToPhpType();
     }
 
     public function getDatabaseType(): DBALType

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Marshal\ContentManager\Schema;
 
-use Marshal\ContentManager\Content;
-
 final class PropertyRelation
 {
     private const array UPDATE_DELETE_OPTIONS = ['CASCADE', 'SET NULL'];

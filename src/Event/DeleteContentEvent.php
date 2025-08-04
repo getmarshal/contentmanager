@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Marshal\ContentManager\Event;
 
-use Marshal\ContentManager\Content;
+use Marshal\ContentManager\Schema\Content;
 
 class DeleteContentEvent
 {

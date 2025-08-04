@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Marshal\ContentManager;
 
 use Laminas\ServiceManager\AbstractPluginManager;
+use Marshal\ContentManager\Schema\Content;
 use Marshal\ContentManager\Schema\Property;
 use Marshal\ContentManager\Schema\PropertyConfig;
 use Marshal\ContentManager\Schema\PropertyRelation;
@@ -58,7 +59,6 @@ final class ContentManager extends AbstractPluginManager
             );
         }
 
-        $propertyConfig = new PropertyConfig($definition);
-        return new Property($identifier, $propertyConfig);
+        return new Property($identifier, new PropertyConfig($definition));
     }
 }

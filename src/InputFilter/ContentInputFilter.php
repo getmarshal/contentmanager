@@ -6,7 +6,7 @@ namespace Marshal\ContentManager\InputFilter;
 
 use Laminas\InputFilter\Input;
 use Laminas\InputFilter\InputFilter;
-use Marshal\ContentManager\Content;
+use Marshal\ContentManager\Schema\Content;
 
 class ContentInputFilter extends InputFilter
 {

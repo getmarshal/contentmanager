@@ -12,18 +12,19 @@ final class PropertyConfig
     /**
      * @var array<PropertyConstraint>
      */
+    private string $comment;
     private array $constraints = [];
-    private array $platformOptions = [];
+    private bool $convertToPhpType = true;
     private mixed $default = null;
     private array $filters = [];
     private bool $fixed = false;
     private PropertyIndex $index;
     private ?int $length = null;
     private bool $notNull = false;
+    private array $platformOptions = [];
     private int $precision = 10;
     private PropertyRelation $relation;
     private int $scale = 0;
-    private string $comment;
     private bool $unsigned = false;
     private array $validators = [];
 
@@ -77,6 +78,10 @@ final class PropertyConfig
             $this->default = $definition['default'];
         }
 
+        if (isset($definition['convertToPhpType']) && \is_bool($definition['convertToPhpType'])) {
+            $this->convertToPhpType = $definition['convertToPhpType'];
+        }
+
         // setup index
         if (isset($definition['index'])) {
             $this->index = new PropertyIndex($definition['index']);
@@ -98,6 +103,11 @@ final class PropertyConfig
         foreach ($definition['validators'] ?? [] as $validator => $options) {
             $this->validators[$validator] = $options;
         }
+    }
+
+    public function getConvertToPhpType(): bool
+    {
+        return $this->convertToPhpType;
     }
 
     public function getDatabaseType(): Type

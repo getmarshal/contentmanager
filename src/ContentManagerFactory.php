@@ -10,7 +10,7 @@ final class ContentManagerFactory
 {
     public function __invoke(ContainerInterface $container): ContentManager
     {
-        $config = $container->get('config')['content'] ?? [];
+        $config = $container->get('config')['schema'] ?? [];
         return new ContentManager($container, $config);
     }
 }

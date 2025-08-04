@@ -8,6 +8,10 @@ class InvalidContentConfigException extends \InvalidArgumentException
 {
     public function __construct(string $name, array $messages)
     {
-        parent::__construct("Invalid content config $name");
+        parent::__construct(\sprintf(
+            "Invalid content config %s: %s",
+            $name,
+            \implode(', ', $messages)
+        ));
     }
 }

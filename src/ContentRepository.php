@@ -8,25 +8,24 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use loophp\collection\Collection;
 use Marshal\ContentManager\Event\ReadCollectionEvent;
 use Marshal\ContentManager\Event\ReadContentEvent;
+use Marshal\ContentManager\Schema\Content;
 use Marshal\ContentManager\Schema\Property;
-use Marshal\Util\Database\Connection;
-use Marshal\Util\Database\ConnectionFactory;
+use Marshal\Util\Database\DatabaseAwareInterface;
+use Marshal\Util\Database\DatabaseAwareTrait;
 use Marshal\Util\Database\QueryBuilder;
 
-class ContentRepository
+final class ContentRepository implements DatabaseAwareInterface
 {
-    private Connection $connection;
+    use DatabaseAwareTrait;
 
-    public function __construct(
-        private ConnectionFactory $connectionFactory,
-        private ContentManager $contentManager
-    ) {
+    public function __construct(private ContentManager $contentManager)
+    {
     }
 
-    public function create(Content $content): int|string
+    public function create(Content $content): int|string|null
     {
         // prepare the query
-        $connection = $this->connectionFactory->getConnection($content->getDatabase());
+        $connection = $this->getDatabaseConnection($content->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->insert($content->getTable());
 
@@ -44,13 +43,18 @@ class ContentRepository
             );
         }
 
-        return $queryBuilder->executeStatement();
+        $result = $queryBuilder->executeStatement();
+        if (! \is_numeric($result) || \intval($result) <= 0) {
+            return null;
+        }
+
+        return $connection->lastInsertId();
     }
 
     public function delete(Content $content, array $args = []): QueryBuilder
     {
         // build the delete query
-        $connection = $this->connectionFactory->getConnection($content->getDatabase());
+        $connection = $this->getDatabaseConnection($content->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->delete("{$content->getTable()} {$content->getTable()}");
         $this->applyArguments($queryBuilder, $content, $args);
@@ -60,7 +64,9 @@ class ContentRepository
     public function filter(ReadCollectionEvent $event): Collection
     {
         $content = $this->contentManager->get($event->getContentIdentifier());
-        $connection = $this->connectionFactory->getConnection($content->getDatabase());
+        $connection = $this->getDatabaseConnection($content->getDatabase());
+        // $prop = $content->getProperty('diff');
+        // var_dump($prop->getDatabaseType());
 
         $table = $content->getTable();
         $queryBuilder = $connection->createQueryBuilder();
@@ -114,7 +120,7 @@ class ContentRepository
 
         // build the query
         $table = $content->getTable();
-        $connection = $this->connectionFactory->getConnection($content->getDatabase());
+        $connection = $this->getDatabaseConnection($content->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->select("$table.*")->from($table, $table);
 
@@ -148,7 +154,7 @@ class ContentRepository
     public function update(Content $content, array $data): int|string
     {
         // build the delete query
-        $connection = $this->connectionFactory->getConnection($content->getDatabase());
+        $connection = $this->getDatabaseConnection($content->getDatabase());
         $table = $content->getTable();
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->update($table);

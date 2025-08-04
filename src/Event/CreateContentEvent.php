@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Marshal\ContentManager\Event;
 
-use Marshal\ContentManager\Content;
+use Marshal\ContentManager\Schema\Content;
 use Marshal\EventManager\ErrorMessagesTrait;
 use Marshal\EventManager\EventParametersTrait;
 
@@ -47,9 +47,14 @@ class CreateContentEvent
         return $this->saveMeta;
     }
 
-    public function isSuccess(): bool
+    public function hasContent(): bool
     {
         return isset($this->content);
+    }
+
+    public function isSuccess(): bool
+    {
+        return $this->hasContent();
     }
 
     public function saveMeta(): static

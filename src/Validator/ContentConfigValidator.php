@@ -9,18 +9,20 @@ use Laminas\Validator\AbstractValidator;
 class ContentConfigValidator extends AbstractValidator
 {
     private const string IDENTIFIER_NOT_FOUND = 'identifierNotFound';
-    private const string INVALID_CONFIG = 'invalidConfig';
     private const string INVALID_CONTENT_IDENTIFIER = 'invalidContentIdentifier';
+    private const string INVALID_INDEX_CONFIG = 'invalidIndexConfig';
     private const string INVALID_PROPERTIES_CONFIGURED = 'invalidPropertiesConfigured';
     private const string INVALID_PROPERTY_NAME = 'invalidPropertyName';
+    private const string INVALID_RELATION_CONFIG = 'invalidRelationConfig';
     private const string PROPERY_RELATION_SCHEMA_NOT_SPECIFIED = 'noPropertyRelationSchema';
     private const string PROPERY_RELATION_PROPERTY_NOT_SPECIFIED = 'noPropertyRelationProperty';
     public array $messageTemplates = [
         self::IDENTIFIER_NOT_FOUND => "Content identifier %value% not found in config",
-        self::INVALID_CONFIG => 'Invalid config. Must be an an instance of ContentConfig',
         self::INVALID_CONTENT_IDENTIFIER => 'Invalid content identifier %value%. Must contain format `database::table`',
+        self::INVALID_INDEX_CONFIG => 'Invalid index config %value%',
         self::INVALID_PROPERTIES_CONFIGURED => 'Content schema %value% properties empty or not configured',
         self::INVALID_PROPERTY_NAME => 'Invalid property name %value%',
+        self::INVALID_RELATION_CONFIG => 'Invalid relation config %value%',
         self::PROPERY_RELATION_SCHEMA_NOT_SPECIFIED => "Property relation %value% schema key not specified",
         self::PROPERY_RELATION_PROPERTY_NOT_SPECIFIED => "Property relation %value% property key not specified",
     ];
@@ -66,7 +68,8 @@ class ContentConfigValidator extends AbstractValidator
     {
         if (isset($propertyConfig['index'])) {
             if (! \is_array($propertyConfig['index']) && ! \is_bool($propertyConfig['index'])) {
-                $this->error(self::INVALID_CONFIG);
+                $this->setValue("on property $propertyName, schema $schemaName");
+                $this->error(self::INVALID_INDEX_CONFIG);
                 return FALSE;
             }
 
@@ -77,7 +80,8 @@ class ContentConfigValidator extends AbstractValidator
 
         if (isset($propertyConfig['relation'])) {
             if (! \is_array($propertyConfig['relation'])) {
-                $this->error(self::INVALID_CONFIG);
+                $this->setValue("on property $propertyName, schema $schemaName");
+                $this->error(self::INVALID_RELATION_CONFIG);
                 return FALSE;
             }
 

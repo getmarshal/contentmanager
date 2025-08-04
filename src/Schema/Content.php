@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Marshal\ContentManager;
+namespace Marshal\ContentManager\Schema;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Marshal\ContentManager\Schema\Property;
 
-class Content
+final class Content
 {
     public function __construct(
         private string $database,
@@ -81,23 +80,22 @@ class Content
         return isset($this->properties[$property]);
     }
 
-    public function hydrate(array $row, ?AbstractPlatform $databasePlatform = NULL): static
+    public function hydrate(array $data, ?AbstractPlatform $databasePlatform = NULL): static
     {
-        foreach ($row as $key => $value) {
-            foreach ($this->getProperties() as $property) {
-                if ($key !== $property->getIdentifier()) {
-                    continue;
-                }
+        foreach ($data as $key => $value) {
+            if (! $this->hasProperty($key)) {
+                continue;
+            }
 
-                if (! $property->hasRelation()) {
-                    NULL === $databasePlatform
-                        ? $property->setValue($value)
-                        : $property->setValue(
-                            $property->getDatabaseType()->convertToPHPValue($value, $databasePlatform)
-                        );
-                } else {
-                    $property->setValue($this->hydrateRelation($property, $row));
-                }
+            $property = $this->getProperty($key);
+            if (! $property->hasRelation()) {
+                NULL === $databasePlatform || TRUE !== $property->getConvertToPhpType()
+                    ? $property->setValue($value)
+                    : $property->setValue(
+                        $property->getDatabaseType()->convertToPHPValue($value, $databasePlatform)
+                    );
+            } else {
+                $property->setValue($this->hydrateRelation($property, $data));
             }
         }
 
@@ -117,7 +115,7 @@ class Content
         return $values;
     }
 
-    private function hydrateRelation(Property $property, array $data): self
+    private function hydrateRelation(Property $property, array $data, ?AbstractPlatform $databasePlatform = NULL): self
     {
         $content = $property->getRelation()->getSchema();
         if (! isset($data[$property->getIdentifier()])) {
@@ -152,16 +150,19 @@ class Content
         }
 
         foreach ($value as $k => $v) {
-            foreach ($content->getProperties() as $relationProperty) {
-                if ($k !== $relationProperty->getIdentifier()) {
-                    continue;
-                }
+            if (! $content->hasProperty($k)) {
+                continue;
+            }
 
-                if ($relationProperty->hasRelation()) {
-                    $relationProperty->setValue($this->hydrateRelation($relationProperty, $data));
-                } else {
-                    $relationProperty->setValue($v);
-                }
+            $relationProperty = $content->getProperty($k);
+            if ($relationProperty->hasRelation()) {
+                $relationProperty->setValue($this->hydrateRelation($relationProperty, $data, $databasePlatform));
+            } else {
+                NULL === $databasePlatform || TRUE !== $relationProperty->getConvertToPhpType()
+                    ? $relationProperty->setValue($v)
+                    : $relationProperty->setValue(
+                        $relationProperty->getDatabaseType()->convertToPHPValue($v, $databasePlatform)
+                    );
             }
         }
 
