@@ -5,18 +5,23 @@ declare(strict_types=1);
 namespace Marshal\ContentManager;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use loophp\collection\Collection;
-use Marshal\ContentManager\Event\ReadCollectionEvent;
-use Marshal\ContentManager\Event\ReadContentEvent;
-use Marshal\ContentManager\Schema\Content;
-use Marshal\ContentManager\Schema\Property;
+use Marshal\ContentManager\Event\SQLQueryEvent;
+use Marshal\EventManager\EventDispatcherAwareInterface;
+use Marshal\EventManager\EventDispatcherAwareTrait;
 use Marshal\Util\Database\DatabaseAwareInterface;
 use Marshal\Util\Database\DatabaseAwareTrait;
 use Marshal\Util\Database\QueryBuilder;
+use Marshal\Util\Database\Schema\Property;
+use Marshal\Util\Database\Schema\Type;
+use loophp\collection\Collection;
 
-final class ContentRepository implements DatabaseAwareInterface
+final class ContentRepository implements DatabaseAwareInterface, EventDispatcherAwareInterface
 {
     use DatabaseAwareTrait;
+    use EventDispatcherAwareTrait;
+
+    private const string OP_SELECT = "where";
+    private const string OP_UPDATE = "update";
 
     public function __construct(private ContentManager $contentManager)
     {
@@ -25,9 +30,9 @@ final class ContentRepository implements DatabaseAwareInterface
     public function create(Content $content): int|string|null
     {
         // prepare the query
-        $connection = $this->getDatabaseConnection($content->getDatabase());
+        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->insert($content->getTable());
+        $queryBuilder->insert($content->getType()->getTable());
 
         foreach ($content->getProperties() as $property) {
             if ($property->isAutoIncrement()) {
@@ -35,7 +40,7 @@ final class ContentRepository implements DatabaseAwareInterface
             }
 
             $queryBuilder->setValue(
-                $property->getIdentifier(),
+                $property->getName(),
                 $queryBuilder->createNamedParameter(
                     $property->getDatabaseValue($connection->getDatabasePlatform()),
                     $property->getDatabaseType()->getBindingType()
@@ -54,21 +59,19 @@ final class ContentRepository implements DatabaseAwareInterface
     public function delete(Content $content, array $args = []): QueryBuilder
     {
         // build the delete query
-        $connection = $this->getDatabaseConnection($content->getDatabase());
+        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->delete("{$content->getTable()} {$content->getTable()}");
-        $this->applyArguments($queryBuilder, $content, $args);
+        // $queryBuilder->delete("{$content->getType()->getTable()} {$content->getType()->getTable()}");
+        // $this->applyQueryArgs($queryBuilder, $content, $args);
         return $queryBuilder;
     }
 
-    public function filter(ReadCollectionEvent $event): Collection
+    public function filter(ContentQuery $query): Collection
     {
-        $content = $this->contentManager->get($event->getContentIdentifier());
-        $connection = $this->getDatabaseConnection($content->getDatabase());
-        // $prop = $content->getProperty('diff');
-        // var_dump($prop->getDatabaseType());
+        $content = $this->contentManager->get($query->getSchema());
+        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
 
-        $table = $content->getTable();
+        $table = $content->getType()->getTable();
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->select("$table.*")->from($table, $table);
 
@@ -82,51 +85,49 @@ final class ContentRepository implements DatabaseAwareInterface
         }
 
         // apply query arguments
-        $this->applyArguments($queryBuilder, $content, $event->getParams());
+        $this->applyQueryArgs($queryBuilder, $content, $query);
 
-        foreach ($event->getWhere() as $expression => $parameters) {
-            $queryBuilder->andWhere($expression);
-            foreach ($parameters as $key => $value) {
-                $queryBuilder->setParameter($key, $value);
-            }
-        }
-
-        foreach ($event->getGroupBy() as $expression) {
+        foreach ($query->getGroupBy() as $expression) {
             $queryBuilder->addGroupBy($expression);
         }
 
-        foreach ($event->getOrderBy() as $column => $direction) {
-            $queryBuilder->addOrderBy($column, $direction);
+        foreach ($query->getOrderBy() as $property => $direction) {
+            $queryBuilder->addOrderBy($property, $direction);
         }
 
-        $iterable = $queryBuilder->setFirstResult($event->getOffset())
-            ->setMaxResults($event->getLimit())
+        $this->getEventDispatcher()->dispatch(new SQLQueryEvent(
+            sql: $queryBuilder->getSQL(),
+            params: $queryBuilder->getParameters(),
+        ));
+
+        $iterable = $queryBuilder->setFirstResult($query->getOffset())
+            ->setMaxResults($query->getLimit())
             ->executeQuery()
             ->iterateAssociative();
 
         $platform = $connection->getDatabasePlatform();
-        return Collection::fromCallable(static function () use ($iterable, $event, $content, $platform): \Generator {
+        $toArray = $query->getToArray();
+        return Collection::fromCallable(static function () use ($iterable, $toArray, $content, $platform): \Generator {
             foreach ($iterable as $row) {
-                yield $event->getToArray()
+                yield $toArray
                     ? $content->hydrate($row, $platform)->toArray()
                     : $content->hydrate($row, $platform);
             }
         });
     }
 
-    public function get(ReadContentEvent $event): void
+    public function get(ContentQuery $query): Content
     {
-        $content = $this->contentManager->get($event->getContentIdentifier());
+        $content = $this->contentManager->get($query->getSchema());
 
         // build the query
-        $table = $content->getTable();
-        $connection = $this->getDatabaseConnection($content->getDatabase());
+        $table = $content->getType()->getTable();
+        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->select("$table.*")->from($table, $table);
 
         $duplicates = [];
         foreach ($content->getProperties() as $property) {
-            \assert($property instanceof Property);
             if (! $property->hasRelation()) {
                 continue;
             }
@@ -135,77 +136,75 @@ final class ContentRepository implements DatabaseAwareInterface
         }
 
         // apply query arguments
-        $this->applyArguments($queryBuilder, $content, $event->getParams());
-
-        foreach ($event->getWhere() as $expression => $parameters) {
-            $queryBuilder->andWhere($expression);
-            foreach ($parameters as $key => $value) {
-                $queryBuilder->setParameter($key, $value);
-            }
-        }
+        $this->applyQueryArgs($queryBuilder, $content, $query);
 
         $result = $queryBuilder->setMaxResults(1)->executeQuery()->fetchAssociative();
         if (! empty($result)) {
-            $event->setRawResult($result);
-            $event->setContent($content->hydrate($result, $connection->getDatabasePlatform()));
+            $content->hydrate($result, $connection->getDatabasePlatform());
         }
+
+        return $content;
     }
 
     public function update(Content $content, array $data): int|string
     {
         // build the delete query
-        $connection = $this->getDatabaseConnection($content->getDatabase());
-        $table = $content->getTable();
+        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->update($table);
+        $queryBuilder->update($content->getType()->getTable());
 
-        $this->applyArguments(
-            $queryBuilder,
-            $content,
-            $data,
+        $query = new ContentQuery();
+        foreach ($data as $key => $value) {
+            $query->where($key, $value);
+        }
+
+        $this->applyQueryArgs(
+            queryBuilder: $queryBuilder,
+            content: $content,
+            query: $query,
             platform: $connection->getDatabasePlatform(),
-            operation: 'set'
+            operation: self::OP_UPDATE
         );
 
         // set the where clause using the model primary key
         $queryBuilder->where($queryBuilder->expr()->eq(
-            $content->getAutoIncrement()->getIdentifier(),
-            $queryBuilder->createNamedParameter($content->getAutoIncrement()->getValue())
+            $content->getType()->getAutoIncrement()->getName(),
+            $queryBuilder->createNamedParameter($content->getAutoId())
         ));
 
         return $queryBuilder->executeStatement();
     }
 
-    private function applyArguments(
+    private function applyQueryArgs(
         QueryBuilder $queryBuilder,
         Content $content,
-        array $args,
-        ?AbstractPlatform $platform = null,
-        string $operation = 'where'
+        ContentQuery $query,
+        ?AbstractPlatform $platform = NULL,
+        string $operation = self::OP_SELECT
     ): void {
-        foreach ($args as $identifier => $value) {
-            // potentially modified column/argument
-            if (! $content->hasProperty($identifier)) {
-                $this->processColumnModifier($queryBuilder, $content, $identifier, $value);
+        foreach ($query->getWhere() as $name => $value) {
+            // potentially modified Property/argument
+            if (! $content->hasProperty($name)) {
+                $this->buildModifiedProperty($queryBuilder, $content->getType(), $name, $value);
                 continue;
             }
 
-            $property = $content->getProperty($identifier);
+            $property = $content->getProperty($name);
 
             if ($value instanceof Content) {
-                $normalizedValue = $value->getAutoIncrement()->getValue();
-            }elseif (\is_array($value) && ! empty($value) && $operation === 'where') {
-                $this->processSubValue($queryBuilder, $property, $value);
+                $normalizedValue = $value->getAutoId();
+            } elseif (\is_array($value) && ! empty($value) && $operation === self::OP_SELECT) {
+                $this->buildArrayValue($queryBuilder, $property, $value);
                 continue;
             } else {
                 $normalizedValue = $value;
             }
 
             switch ($operation) {
-                case 'where':
+                case self::OP_SELECT:
                     $queryBuilder->andWhere(
                         $queryBuilder->expr()->eq(
-                            $content->getTable() . '.' . $property->getIdentifier(),
+                            $content->getTable() . '.' . $property->getName(),
                             $queryBuilder->createNamedParameter(
                                 $normalizedValue,
                                 $property->getDatabaseType()->getBindingType()
@@ -214,9 +213,9 @@ final class ContentRepository implements DatabaseAwareInterface
                     );
                     break;
 
-                case 'set':
+                case self::OP_UPDATE:
                     $queryBuilder->set(
-                        $property->getIdentifier(),
+                        $property->getName(),
                         $queryBuilder->createNamedParameter(
                             $property->getDatabaseType()->convertToDatabaseValue($normalizedValue, $platform),
                             $property->getDatabaseType()->getBindingType()
@@ -232,23 +231,23 @@ final class ContentRepository implements DatabaseAwareInterface
         $duplicates[] = $property->getRelation()->getAlias();
 
         $subSelect = [];
-        foreach ($property->getRelation()->getSchema()->getProperties() as $subProperty) {
-            $subSelect[] = "'{$subProperty->getIdentifier()}', {$property->getRelation()->getAlias()}.{$subProperty->getIdentifier()}";
+        foreach ($property->getRelation()->getType()->getProperties() as $subProperty) {
+            $subSelect[] = "'{$subProperty->getName()}', {$property->getRelation()->getAlias()}.{$subProperty->getName()}";
         }
 
         // @todo this is pgsql only!
         $queryBuilder
             ->addSelect(\sprintf("JSON_BUILD_OBJECT(%s) AS %s",
                 \implode(', ', $subSelect),
-                $property->getIdentifier()
+                $property->getName()
             ))->leftJoin(
-                $table,
-                $property->getRelation()->getSchema()->getTable(),
-                $property->getRelation()->getAlias(),
-                $table . '.' . $property->getIdentifier() . '=' . $property->getIdentifier() . '.' . $property->getRelationColumn()
+                fromAlias: $table,
+                join: $property->getRelation()->getType()->getTable(),
+                alias: $property->getRelation()->getAlias(),
+                condition: $table . '.' . $property->getName() . '=' . $property->getName() . '.' . $property->getRelationProperty()->getName()
             );
 
-        foreach($property->getRelation()->getSchema()->getProperties() as $innerProperty) {
+        foreach($property->getRelation()->getType()->getProperties() as $innerProperty) {
             if (! $innerProperty->hasRelation() || \in_array($innerProperty->getRelation()->getAlias(), $duplicates, TRUE)) {
                 continue;
             }
@@ -258,123 +257,159 @@ final class ContentRepository implements DatabaseAwareInterface
         }
     }
 
-    private function processColumnModifier(QueryBuilder $queryBuilder, Content $content, string $arg, mixed $value): void
+    private function buildArrayValue(QueryBuilder $queryBuilder, Property $property, array $value): void
     {
-        $table = $content->getTable();
-        $modifiers = ['gt', 'gte', 'in', 'isnull', 'lt', 'lte', 'notIn'];
-        $split = \explode('__', $arg);
-        if (\count($split) === 2) {
-            if (! \in_array($split[1], $modifiers, true)) {
-                if ($content->hasProperty($split[0])) {
-                    $queryBuilder->andWhere(
-                        $queryBuilder->expr()->eq("$split[0].$split[1]", $queryBuilder->createNamedParameter((string) $value))
-                    );
-                    return;
-                }
-            }
-
-            switch ($split[1]) {
-                case 'gt':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gt(
-                        "$table.$split[0]",
-                        $queryBuilder->createNamedParameter($value)
-                    ));
-                    break;
-
-                case 'gte':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gte(
-                        "$table.$split[0]",
-                        $queryBuilder->createNamedParameter($value)
-                    ));
-                    break;
-
-                case 'in':
-                    $queryBuilder->andWhere($queryBuilder->expr()->in(
-                        "$table.$split[0]",
-                        \array_map(static fn (string $column): string => "'$column'", $value))
-                    );
-                    break;
-
-                case 'isnull':
-                    if (FALSE === $value) {
-                        $queryBuilder->andWhere($queryBuilder->expr()->isNotNull("$table.$split[0]"));
-                    } elseif (TRUE === $value) {
-                        $queryBuilder->andWhere($queryBuilder->expr()->isNull("$table.$split[0]"));
-                    }
-                    break;
-
-                case 'lt':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lt(
-                        "$table.$split[0]",
-                        $queryBuilder->createNamedParameter($value)
-                    ));
-                    break;
-
-                case 'lte':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lte(
-                        "$table.$split[0]",
-                        $queryBuilder->createNamedParameter($value)
-                    ));
-                    break;
-
-                case 'notIn':
-                    $queryBuilder->andWhere($queryBuilder->expr()->notIn(
-                        "$table.$split[0]",
-                        \array_map(static fn (string $column): string => "'$column'", $value))
-                    );
-                    break;
-            }
-        }
-    }
-
-    private function processSubValue(QueryBuilder $queryBuilder, Property $property, array $value): void
-    {
-        foreach ($value as $column => $subValue) {
-            if (\str_contains($column, '__')) {
-                $this->processColumnModifier(
+        foreach ($value as $key => $subValue) {
+            if (\str_contains($key, '__')) {
+                $this->buildModifiedProperty(
                     $queryBuilder,
-                    $property->getRelation()->getSchema(),
-                    $column,
+                    $property->getRelation()->getType(),
+                    $key,
                     $subValue
                 );
                 continue;
             }
 
             if ($subValue instanceof Content) {
-                $queryBuilder->andWhere(
-                    $queryBuilder->expr()->eq(
-                        $property->getIdentifier() . '.' . $column,
-                        $queryBuilder->createNamedParameter(
-                            $subValue->getAutoIncrement()->getValue(),
-                            $property->getDatabaseType()->getBindingType()
-                        )
-                    )
-                );
+                $this->buildContentValue($queryBuilder, $property, $key, $subValue);
                 continue;
             }
 
             if (\is_scalar($subValue)) {
-                $queryBuilder->andWhere(
-                    $queryBuilder->expr()->eq(
-                        $property->getIdentifier() . '.' . $column,
-                        $queryBuilder->createNamedParameter(
-                            $subValue,
-                            $property->getDatabaseType()->getBindingType()
-                        )
-                    )
-                );
+                $this->buildScalarValue($queryBuilder, $property, $key, $subValue);
                 continue;
             }
 
             if (\is_array($subValue)) {
-                foreach ($property->getRelation()->getSchema()->getProperties() as $subProperty) {
-                    if ($subProperty->getIdentifier() !== $column) {
+                foreach ($property->getRelation()->getType()->getProperties() as $subProperty) {
+                    if ($subProperty->getName() !== $key) {
                         continue;
                     }
 
-                    $this->processSubValue($queryBuilder, $subProperty, $subValue);
+                    $this->buildArrayValue($queryBuilder, $subProperty, $subValue);
                 }
             }
         }
+    }
+
+    private function buildContentValue(QueryBuilder $queryBuilder, Property $property, string $name, Content $value): void
+    {
+        $queryBuilder->andWhere(
+            $queryBuilder->expr()->eq(
+                $property->getName() . '.' . $name,
+                $queryBuilder->createNamedParameter(
+                    $value->getAutoId(),
+                    $property->getDatabaseType()->getBindingType()
+                )
+            )
+        );
+    }
+
+    private function buildModifiedProperty(QueryBuilder $queryBuilder, Type $type, string $arg, mixed $value): void
+    {
+        $split = \explode('__', $arg);
+        if (\count($split) !== 2) {
+            // potentially raw query
+            $this->buildRawWhereQuery($queryBuilder, $arg, $value);
+            return;
+        }
+
+        $modifiers = ['gt', 'gte', 'in', 'isnull', 'lt', 'lte', 'notIn'];
+        if (! \in_array($split[1], $modifiers, true)) {
+            if ($type->hasProperty($split[0])) {
+                $queryBuilder->andWhere(
+                    $queryBuilder->expr()->eq("$split[0].$split[1]", $queryBuilder->createNamedParameter((string) $value))
+                );
+                return;
+            }
+        }
+
+        $table = $type->getTable();
+        $column = "$table.$split[0]";
+        switch ($split[1]) {
+            case 'gt':
+                $queryBuilder->andWhere($queryBuilder->expr()->gt(
+                    $column,
+                    $queryBuilder->createNamedParameter($value)
+                ));
+                break;
+
+            case 'gte':
+                $queryBuilder->andWhere($queryBuilder->expr()->gte(
+                    $column,
+                    $queryBuilder->createNamedParameter($value)
+                ));
+                break;
+
+            case 'in':
+                $queryBuilder->andWhere($queryBuilder->expr()->in(
+                    $column,
+                    \array_map(static fn (string $property): string => "'$property'", $value))
+                );
+                break;
+
+            case 'isnull':
+                if (FALSE === $value) {
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($column));
+                } elseif (TRUE === $value) {
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($column));
+                }
+                break;
+
+            case 'lt':
+                $queryBuilder->andWhere($queryBuilder->expr()->lt(
+                    $column,
+                    $queryBuilder->createNamedParameter($value)
+                ));
+                break;
+
+            case 'lte':
+                $queryBuilder->andWhere($queryBuilder->expr()->lte(
+                    $column,
+                    $queryBuilder->createNamedParameter($value)
+                ));
+                break;
+
+            case 'notIn':
+                $queryBuilder->andWhere($queryBuilder->expr()->notIn(
+                    $column,
+                    \array_map(static fn (string $property): string => "'$property'", $value))
+                );
+                break;
+        }
+    }
+
+    private function buildRawWhereQuery(QueryBuilder $queryBuilder, string $expression, mixed $arg): void
+    {
+        if (! \is_array($arg)) {
+            return;
+        }
+
+        $queryBuilder->andWhere($expression);
+            foreach ($arg as $key => $value) {
+                if ($value instanceof Content) {
+                    $queryBuilder->setParameter($key, $value->getType()->getAutoIncrement()->getValue());
+                }
+
+                if (\is_scalar($value)) {
+                    $queryBuilder->setParameter($key, $value);
+                }
+
+                // @todo throw exception if value is not an instance of Content, and not a scalar
+                // possibly check $content for presence of $key property first
+            }
+    }
+
+    private function buildScalarValue(QueryBuilder $queryBuilder, Property $property, string $name, mixed $value): void
+    {
+        $queryBuilder->andWhere(
+            $queryBuilder->expr()->eq(
+                $property->getName() . '.' . $name,
+                $queryBuilder->createNamedParameter(
+                    $value,
+                    $property->getDatabaseType()->getBindingType()
+                )
+            )
+        );
     }
 }

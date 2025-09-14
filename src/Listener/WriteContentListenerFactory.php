@@ -20,7 +20,7 @@ final class WriteContentListenerFactory
 
         $contentManager = $container->get(ContentManager::class);
         if (! $contentManager instanceof ContentManager) {
-            throw new \RuntimeException("Invalid content manager");
+            throw new \InvalidArgumentException("Invalid schema manager");
         }
 
         $validatorPluginManager = $container->get(ValidatorPluginManager::class);

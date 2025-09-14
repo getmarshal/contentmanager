@@ -14,11 +14,12 @@ use Marshal\ContentManager\Event\UpdateContentEvent;
 use Marshal\ContentManager\InputFilter\ContentInputFilter;
 use Marshal\EventManager\EventListenerInterface;
 use Marshal\Util\Logger\LoggerFactoryAwareInterface;
-use Marshal\Util\Logger\LoggerFactoryTrait;
+use Marshal\Util\Logger\LoggerFactoryAwareTrait;
+use Marshal\ContentManager\Content;
 
 class WriteContentListener implements EventListenerInterface, LoggerFactoryAwareInterface
 {
-    use LoggerFactoryTrait;
+    use LoggerFactoryAwareTrait;
 
     private const string CONTENT_LOGGER = 'marshal::content';
 
@@ -48,14 +49,14 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         $content = $this->contentManager->get($event->getContentIdentifier());
 
         $inputFilter = new ContentInputFilter($content);
-        $inputFilter->setData($event->getParams());
+        $inputFilter->setData(\array_merge($content->toArray(), $event->getParams()));
         if (! $inputFilter->isValid()) {
             $event->setErrorMessages($inputFilter->getMessages());
             return;
         }
 
         // additional validators
-        foreach ($content->getValidators() as $name => $options) {
+        foreach ($content->getType()->getValidators() as $name => $options) {
             $options['__operation'] = 'create';
             $validator = $this->validatorPluginManager->get($name, $options);
             if (! $validator->isValid($inputFilter->getValues())) {
@@ -75,7 +76,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
             return;
         }
 
-        $content->getAutoIncrement()->setValue(\intval($result));
+        $content->getType()->getAutoIncrement()->setValue(\intval($result));
         $event->setContent($content);
     }
 
@@ -84,13 +85,16 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         $content = $event->getContent();
 
         $query = $this->contentRepository->delete($content, [
-            $content->getAutoIncrement()->getIdentifier() => $content->getAutoIncrement()->getValue(),
+            $content->getType()->getAutoIncrement()->getName() => $content->getType()->getAutoIncrement()->getValue(),
         ]);
 
         $result = $query->executeStatement();
-        if (\is_numeric($result)) {
-            $event->setIsSuccess(TRUE);
+        if (! \is_numeric($result)) {
+            $this->getLogger(self::CONTENT_LOGGER)->error("Error deleting content", []);
+            return;
         }
+
+        $event->setIsSuccess(TRUE);
     }
 
     public function onDeleteCollectionEvent(DeleteCollectionEvent $event): void
@@ -102,9 +106,12 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         $query = $this->contentRepository->delete($content, $event->getParams());
 
         $result = $query->executeStatement();
-        if (\is_numeric($result)) {
-            $event->setDeleteCount(\intval($result));
+        if (! \is_numeric($result)) {
+            $this->getLogger(self::CONTENT_LOGGER)->error("Error deleting content", $event->getParams());
+            return;
         }
+
+        $event->setDeleteCount(\intval($result));
     }
 
     public function onUpdateContent(UpdateContentEvent $event): void
@@ -134,7 +141,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         }
 
         // additional validators
-        foreach ($content->getValidators() as $name => $options) {
+        foreach ($content->getType()->getValidators() as $name => $options) {
             $options['__operation'] = 'update';
             $validator = $this->validatorPluginManager->get($name, $options);
             if (! $validator->isValid($inputFilter->getValues())) {

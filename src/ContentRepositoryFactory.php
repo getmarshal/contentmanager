@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Marshal\ContentManager;
 
 use Psr\Container\ContainerInterface;
+use Marshal\Util\Database\Schema\SchemaManager;
 
 final class ContentRepositoryFactory
 {

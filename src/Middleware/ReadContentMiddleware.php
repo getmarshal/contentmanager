@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Marshal\ContentManager\Middleware;
 
-use Marshal\ContentManager\ContentManager;
-use Marshal\ContentManager\Event\ReadCollectionEvent;
 use Marshal\ContentManager\Event\ReadContentEvent;
 use Marshal\EventManager\EventDispatcherAwareInterface;
 use Marshal\EventManager\EventDispatcherAwareTrait;
-use Marshal\Platform\PlatformInterface;
 use Mezzio\Router\RouteResult;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,87 +17,45 @@ class ReadContentMiddleware implements EventDispatcherAwareInterface, Middleware
 {
     use EventDispatcherAwareTrait;
 
-    public function __construct(private ContentManager $contentManager)
-    {
-    }
+    public const string CONTENT_ATTRIBUTE = "marshal::content";
+
+    private const array CONTENT_ROUTES = [];
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // get the route result
         $routeResult = $request->getAttribute(RouteResult::class);
-        if (! $routeResult instanceof RouteResult) {
+        if (! $routeResult instanceof RouteResult || $routeResult->isFailure()) {
             return $handler->handle($request);
         }
 
-        if ($routeResult->isFailure()) {
+        $routeOptions = $routeResult->getMatchedRoute()->getOptions();
+        if (! isset($routeOptions['content']) || ! \is_array($routeOptions['content'])) {
             return $handler->handle($request);
         }
 
         // fetch request data
         $data = [];
-        $requestQueryArgs = $request->getQueryParams();
-        $routeOptions = $routeResult->getMatchedRoute()->getOptions();
-        if (isset($routeOptions['content']) && \is_array($routeOptions['content'])) {
-            foreach ($routeOptions['content'] as $key => $value) {
-                if (
-                    ! \is_array($value)
-                    || ! isset($value['schema'])
-                    || ! isset($value['urlArgs'])
-                    || ! \is_array($value['urlArgs'])
-                ) {
-                    continue;
-                }
-
-                $queryArgs = $this->getQueryArgs($request, $value['urlArgs']);
-                $event = new ReadContentEvent($value['schema'], $queryArgs);
-                $this->getEventDispatcher()->dispatch($event);
-                if ($event->hasContent()) {
-                    $data[$key] = $event->getContent();
-                }
+        foreach ($routeOptions['content'] as $key => $value) {
+            if (
+                ! \is_array($value)
+                || ! isset($value['schema'])
+                || ! isset($value['urlArgs'])
+                || ! \is_array($value['urlArgs'])
+            ) {
+                continue;
             }
-        }
 
-        if (isset($routeOptions['collections']) && \is_array($routeOptions['collections'])) {
-            foreach ($routeOptions['collections'] as $key => $value) {
-                if (! \is_array($value) || ! isset($value['schema'])) {
-                    continue;
-                }
-
-                if (isset($value['queryArgs']) && \is_array($value['queryArgs'])) {
-                    $queryArgs = [];
-                    foreach ($value['queryArgs'] as $name => $arg) {
-                        if (! isset($requestQueryArgs[$arg])) {
-                            continue;
-                        }
-
-                        $queryArgs[$name] = $requestQueryArgs[$arg];
-                    }
-                    $event = new ReadCollectionEvent($value['schema'], $queryArgs);
-                    $this->getEventDispatcher()->dispatch($event);
-                    $data[$key] = $event->getCollection();
-                }
-
-                if (isset($value['contentArgs']) && \is_array($value['contentArgs'])) {
-                    $queryArgs = [];
-                    foreach ($value['contentArgs'] as $name => $arg) {
-                        if (! \is_string($arg) || ! isset($data[$arg])) {
-                            continue;
-                        }
-
-                        $queryArgs[$name] = $data[$arg];
-                        $event = new ReadCollectionEvent($value['schema'], $queryArgs);
-                        $this->getEventDispatcher()->dispatch($event);
-                        $data[$key] = $event->getCollection();
-                    }
-                }
+            $queryArgs = $this->getQueryArgs($request, $value['urlArgs']);
+            $event = new ReadContentEvent($value['schema'], $queryArgs);
+            $this->getEventDispatcher()->dispatch($event);
+            if ($event->hasContent()) {
+                $data[$key] = $event->getContent();
             }
         }
 
         // return the response
-        $platform = $request->getAttribute(PlatformInterface::class);
-        \assert($platform instanceof PlatformInterface);
-
-        return $platform->formatResponseNew($request, $data);
+        return $handler->handle($request->withAttribute(self::CONTENT_ATTRIBUTE, $data));
     }
 
     private function getQueryArgs(ServerRequestInterface $request, array $config): array

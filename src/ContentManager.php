@@ -1,64 +1,77 @@
 <?php
 
-/**
- * Content Manager
- */
-
 declare(strict_types=1);
 
 namespace Marshal\ContentManager;
 
-use Laminas\ServiceManager\AbstractPluginManager;
-use Marshal\ContentManager\Schema\Content;
-use Marshal\ContentManager\Schema\Property;
-use Marshal\ContentManager\Schema\PropertyConfig;
-use Marshal\ContentManager\Schema\PropertyRelation;
-use Psr\Container\ContainerInterface;
+use Marshal\Util\Database\Exception\InvalidContentConfigException;
+use Marshal\Util\Database\Schema\Property;
+use Marshal\Util\Database\Schema\PropertyRelation;
+use Marshal\Util\Database\Schema\Type;
+use Marshal\Util\Database\Validator\PropertyConfigValidator;
+use Marshal\Util\Database\Validator\TypeConfigValidator;
 
-final class ContentManager extends AbstractPluginManager
+final class ContentManager
 {
-    protected $instanceOf = Content::class;
-
-    public function __construct(private ContainerInterface $parentContainer, private array $config)
-    {
-        parent::__construct($parentContainer);
+    public function __construct(
+        private TypeConfigValidator $typeValidator,
+        private PropertyConfigValidator $propertyValidator,
+        private array $typesConfig,
+        private array $propertiesConfig
+    ) {
     }
 
-    public function get($name, ?array $options = null): Content
+    public function get($name): Content
     {
-        $validator = new Validator\ContentConfigValidator($this->config);
-        if (! $validator->isValid($name)) {
-            throw new Exception\InvalidContentConfigException($name, $validator->getMessages());
+        return new Content($this->getType($name));
+    }
+
+    private function getType(string $name): Type
+    {
+        if (! $this->typeValidator->isValid($name)) {
+            throw new InvalidContentConfigException($name, $this->typeValidator->getMessages());
         }
 
-        // build properties
-        $properties = [];
-        foreach ($this->config[$name]['properties'] as $identifier => $definition) {
-            $properties[$identifier] = $this->buildProperty($identifier, $definition);
-        }
-
-        // create the content class
-        // config already validated
         $nameSplit = \explode('::', $name);
-        $config = $this->config[$name];
-        return new Content(
-            $nameSplit[0],
-            $nameSplit[1],
-            $config,
-            $properties
-        );
-    }
 
-    private function buildProperty(string $identifier, array $definition): Property
-    {
-        if (isset($definition['relation'])) {
-            $definition['relation'] = new PropertyRelation(
-                $identifier,
-                $definition['relation'],
-                $this->get($definition['relation']['schema'])
-            );
+        $type = new Type(
+            identifier: $name,
+            database: $nameSplit[0],
+            table: $nameSplit[1],
+            config: $this->typesConfig[$name]
+        );
+
+        foreach ($this->typesConfig[$name]['inherits'] ?? [] as $identifier) {
+            $type->addParent($this->getType($identifier));
         }
 
-        return new Property($identifier, new PropertyConfig($definition));
+        foreach ($this->typesConfig[$name]['properties'] ?? [] as $identifier => $definition) {
+            if (! $this->propertyValidator->isValid($identifier)) {
+                throw new InvalidContentConfigException($name, $this->propertyValidator->getMessages());
+            }
+
+            if ($type->hasPropertyIdentifier($identifier)) {
+                $property = $type->getPropertyByIdentifier($identifier);
+                $property->prepareFromDefinition($definition);
+                $type->setProperty($property);
+            } else {
+                $fullDefinition = \array_merge($this->propertiesConfig[$identifier], $definition);
+                if (isset($fullDefinition['relation'])) {
+                    $fullDefinition['relation'] = new PropertyRelation(
+                        $this->getType($fullDefinition['relation']['schema']),
+                        $fullDefinition['relation']
+                    );
+                }
+
+                $type->setProperty(new Property($identifier, $fullDefinition));
+            }
+        }
+
+        // remove excluded properties
+        foreach ($this->typesConfig[$name]['exclude_properties'] ?? [] as $identifier) {
+            $type->removeProperty($identifier);
+        }
+
+        return $type;
     }
 }

@@ -6,7 +6,7 @@ namespace Marshal\ContentManager\InputFilter;
 
 use Laminas\InputFilter\Input;
 use Laminas\InputFilter\InputFilter;
-use Marshal\ContentManager\Schema\Content;
+use Marshal\ContentManager\Content;
 
 class ContentInputFilter extends InputFilter
 {
@@ -18,7 +18,7 @@ class ContentInputFilter extends InputFilter
             }
 
             // dynamically create an input for the property
-            $input = new Input($property->getIdentifier());
+            $input = new Input($property->getName());
 
             // add property filters and validators
             foreach ($property->getFilters() as $filter => $options) {
@@ -33,7 +33,7 @@ class ContentInputFilter extends InputFilter
             if ($property->hasRelation()) {
                 $input->setAllowEmpty(FALSE)->setRequired(TRUE);
             } else {
-                $input->setAllowEmpty($property->getNotNull())
+                $input->setAllowEmpty(TRUE)
                     ->setRequired($property->getNotNull());
             }
 

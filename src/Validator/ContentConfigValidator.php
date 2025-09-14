@@ -29,6 +29,7 @@ class ContentConfigValidator extends AbstractValidator
 
     public function __construct(private array $config)
     {
+        parent::__construct();
     }
 
     public function isValid(mixed $value): bool
@@ -107,10 +108,6 @@ class ContentConfigValidator extends AbstractValidator
 
     private function isValidPropertyIndex(array|bool $indexConfig): bool
     {
-        if (\is_bool($indexConfig)) {
-            return TRUE;
-        }
-
         return TRUE;
     }
 

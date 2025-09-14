@@ -23,6 +23,7 @@
         }
     ],
     "require-dev": {
-        "marshal/util": "dev-main"
+        "marshal/util": "dev-master",
+        "phpstan/phpstan": "^2.1"
     }
 }
