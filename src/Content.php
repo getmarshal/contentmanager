@@ -5,19 +5,13 @@ declare(strict_types=1);
 namespace Marshal\ContentManager;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Laminas\Permissions\Acl\Resource\ResourceInterface;
 use Marshal\Util\Database\Schema\Property;
 use Marshal\Util\Database\Schema\Type;
 
-final class Content implements ResourceInterface
+final class Content
 {
-    private array $additionalTypes = [];
     private array $data = [];
     private array $properties = [];
-    /**
-     * @var array<Type>
-     */
-    private array $types = [];
 
     public function __construct(private Type $type)
     {
@@ -28,7 +22,6 @@ final class Content implements ResourceInterface
 
     public function addType(Type $type): static
     {
-        $this->additionalTypes[$type->getIdentifier()] = $type;
         foreach ($type->getProperties() as $property) {
             if ($this->hasProperty($property->getName())) {
                 continue;
@@ -59,15 +52,6 @@ final class Content implements ResourceInterface
         return $this->type->getTable();
     }
 
-    public function getIdentifier(): string
-    {
-        if (! $this->hasProperty("marshal::identifier")) {
-            return (string) $this->getType()->getAutoIncrement()->getValue();
-        }
-
-        return (string) $this->getProperty("marshal::identifier")->getValue();
-    }
-
     /**
      * @return \Marshal\Util\Database\Schema\Property[]
      */
@@ -80,29 +64,16 @@ final class Content implements ResourceInterface
     {
         if (! $this->hasProperty($property)) {
             throw new \InvalidArgumentException(
-                "Missing property $property on content {$this->getIdentifier()}, type {$this->type->getName()}"
+                "Missing property $property on content type {$this->type->getName()}"
             );
         }
 
         return $this->properties[$property];
     }
 
-    public function getResourceId(): string
-    {
-        return $this->getIdentifier();
-    }
-
     public function getType(): Type
     {
         return $this->type;
-    }
-
-    /**
-     * @return array<\Marshal\Util\Database\Schema\Type>
-     */
-    public function getAdditionalTypes(): array
-    {
-        return $this->additionalTypes;
     }
 
     public function hasProperty(string $name): bool
@@ -112,7 +83,7 @@ final class Content implements ResourceInterface
 
     public function hydrate(array $data, ?AbstractPlatform $databasePlatform = NULL): static
     {
-        $this->setData($data);
+        $this->data = $data;
         foreach ($data as $key => $value) {
             if (! $this->hasProperty($key)) {
                 continue;
@@ -138,12 +109,6 @@ final class Content implements ResourceInterface
         return empty($this->data);
     }
 
-    public function setData(array $data): static
-    {
-        $this->data = $data;
-        return $this;
-    }
-
     public function toArray(): array
     {
         $values = [];
@@ -159,8 +124,7 @@ final class Content implements ResourceInterface
 
     private function hydrateRelation(Property $property, array $data, ?AbstractPlatform $databasePlatform = NULL): self
     {
-        $type = $property->getRelation()->getType();
-        $content = new self($type);
+        $content = new self($property->getRelation()->getType());
         if (! isset($data[$property->getName()])) {
             return $content;
         }

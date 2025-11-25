@@ -4,40 +4,20 @@ declare(strict_types=1);
 
 namespace Marshal\ContentManager;
 
-use Laminas\Validator\ValidatorPluginManager;
-use Marshal\Util\Database\Validator\PropertyConfigValidator;
-use Marshal\Util\Database\Validator\TypeConfigValidator;
+use Marshal\Util\Database\Schema\SchemaManager;
 use Psr\Container\ContainerInterface;
 
 final class ContentManagerFactory
 {
     public function __invoke(ContainerInterface $container): ContentManager
     {
-        $typesConfig = $container->get("config")["schema"]["types"] ?? [];
-        if (! \is_array($typesConfig)) {
-            throw new \InvalidArgumentException(\sprintf("Invalid properties config type %s", \get_debug_type($typesConfig)));
+        $schemaManager = $container->get(SchemaManager::class);
+        if (! $schemaManager instanceof SchemaManager) {
+            throw new \InvalidArgumentException(
+                \sprintf("Expected %s, %s given instead", SchemaManager::class, \get_debug_type($schemaManager))
+            );
         }
 
-        $propertiesConfig = $container->get("config")["schema"]["properties"] ?? [];
-        if (! \is_array($propertiesConfig)) {
-            throw new \InvalidArgumentException(\sprintf("Invalid properties config type %s", \get_debug_type($propertiesConfig)));
-        }
-
-        $validatorPluginManager = $container->get(ValidatorPluginManager::class);
-        if (! $validatorPluginManager instanceof ValidatorPluginManager) {
-            throw new \InvalidArgumentException(\sprintf("Invalid %s", ValidatorPluginManager::class));
-        }
-
-        $typeValidator = $validatorPluginManager->get(TypeConfigValidator::class);
-        if (! $typeValidator instanceof TypeConfigValidator) {
-            throw new \InvalidArgumentException(\sprintf("Invalid %s", TypeConfigValidator::class));
-        }
-
-        $propertyValidator = $validatorPluginManager->get(PropertyConfigValidator::class);
-        if (! $propertyValidator instanceof PropertyConfigValidator) {
-            throw new \InvalidArgumentException(\sprintf("Invalid %s", PropertyConfigValidator::class));
-        }
-
-        return new ContentManager($typeValidator, $propertyValidator, $typesConfig, $propertiesConfig);
+        return new ContentManager($schemaManager);
     }
 }

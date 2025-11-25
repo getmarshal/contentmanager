@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace Marshal\ContentManager\Handler;
 
 use Fig\Http\Message\StatusCodeInterface;
-use Marshal\Application\AppInterface;
 use Marshal\Application\AppManager;
 use Marshal\ContentManager\ContentManager;
 use Marshal\ContentManager\Event\ReadCollectionEvent;
 use Marshal\ContentManager\Event\ReadContentEvent;
-use Marshal\ContentManager\Schema\Content;
+use Marshal\ContentManager\Content;
 use Marshal\EventManager\EventDispatcherAwareInterface;
 use Marshal\EventManager\EventDispatcherAwareTrait;
-use Marshal\Platform\Web\Render\TemplateManager;
+use Marshal\Server\Platform\Web\Template\TemplateManager;
 use Marshal\Util\Helper\RequestHandlerTrait;
 use Mezzio\Router\RouteResult;
 use Psr\Http\Message\ResponseInterface;
@@ -37,12 +36,6 @@ final class ContentPageHandler implements EventDispatcherAwareInterface, Request
         $platform = $this->getPlatform($request);
         $routeResult = $this->getRouteResult($request);
 
-        // get the requested app
-        $app = $this->getRequestedApp($routeResult);
-        if (! $app instanceof AppInterface) {
-            return $platform->formatResponse($request, status: StatusCodeInterface::STATUS_NOT_FOUND);
-        }
-
         // get the schema requested
         $content = $this->getRequestedSchema($routeResult);
         if (! $content instanceof Content) {
@@ -63,41 +56,13 @@ final class ContentPageHandler implements EventDispatcherAwareInterface, Request
         }
 
         // get the content prefix, if set
-        if ($content->hasRoutePrefix() && \array_key_exists('schema', $routeResult->getMatchedParams())) {
-            if ($routeResult->getMatchedParams()['schema'] === $content->getRoutePrefix()) {
+        if ($content->getType()->hasRoutePrefix() && \array_key_exists('schema', $routeResult->getMatchedParams())) {
+            if ($routeResult->getMatchedParams()['schema'] === $content->getType()->getRoutePrefix()) {
                 return $this->handleContentIndex($request, $content);
             }
         }
 
         return $platform->formatResponse($request, status: StatusCodeInterface::STATUS_NOT_FOUND);
-    }
-
-    private function getRequestedApp(RouteResult $routeResult): ?AppInterface
-    {
-        $app = $routeResult->getMatchedParams()['app'] ?? null;
-        if (! \is_string($app) || empty($app)) {
-            return null;
-        }
-
-        $appIdentifier = null;
-        foreach ($this->appManager->getConfig() as $identifier => $config) {
-            if (! isset($config['route_prefix'])) {
-                continue;
-            }
-
-            if ($config['route_prefix'] !== $app) {
-                continue;
-            }
-
-            $appIdentifier = $identifier;
-            break;
-        }
-
-        if (null === $appIdentifier) {
-            return null;
-        }
-
-        return $this->appManager->get($appIdentifier);
     }
 
     private function getRequestedSchema(RouteResult $routeResult): ?Content
@@ -107,36 +72,30 @@ final class ContentPageHandler implements EventDispatcherAwareInterface, Request
             return null;
         }
 
-        $schemaIdentifier = null;
-        foreach ($this->contentManager->getConfig() as $identifier => $config) {
-            if (! isset($config['routing']['route_prefix'])) {
+        foreach ($this->contentManager->getAll() as $content) {
+            if (! $content->getType()->hasRoutePrefix()) {
                 continue;
             }
 
-            if ($config['routing']['route_prefix'] !== $schema) {
+            if ($content->getType()->getRoutePrefix() !== $schema) {
                 continue;
             }
 
-            $schemaIdentifier = $identifier;
-            break;
+            return $content;
         }
 
-        if (null === $schemaIdentifier) {
-            return null;
-        }
-
-        return $this->contentManager->get($schemaIdentifier);
+        return null;
     }
 
     private function handleContentIndex(ServerRequestInterface $request, Content $content): ResponseInterface
     {
         $platform = $this->getPlatform($request);
-        $event = new ReadCollectionEvent($content->getIdentifier(), $request->getQueryParams());
+        $event = new ReadCollectionEvent($content->getType()->getIdentifier(), $request->getQueryParams());
         $this->getEventDispatcher()->dispatch($event);
         
         $options = [];
-        if ($content->hasCollectionTemplate()) {
-            $options['template'] = $content->getCollectionTemplate();
+        if ($content->getType()->hasCollectionTemplate()) {
+            $options['template'] = $content->getType()->getCollectionTemplate();
         }
 
         return $platform->formatResponse($request, [
@@ -148,7 +107,7 @@ final class ContentPageHandler implements EventDispatcherAwareInterface, Request
     {
         $platform = $this->getPlatform($request);
 
-        $templateName = $content->hasContentTemplate() ? $content->getContentTemplate() : "marshal::error-404";
+        $templateName = $content->getType()->hasContentTemplate() ? $content->getType()->getContentTemplate() : "marshal::error-404";
         $template = $this->templateManager->get($templateName);
 
         $queryArgs = [];
@@ -170,13 +129,13 @@ final class ContentPageHandler implements EventDispatcherAwareInterface, Request
             }
         }
 
-        $event = new ReadContentEvent($content->getIdentifier(), $queryArgs);
+        $event = new ReadContentEvent($content->getType()->getIdentifier(), $queryArgs);
         $this->getEventDispatcher()->dispatch($event);
         if (! $event->hasContent()) {
             return $platform->formatResponse($request, status: StatusCodeInterface::STATUS_NOT_FOUND);
         }
 
-        $data = [$content->getRoutePrefix() => $event->getContent()];
+        $data = [$content->getType()->getRoutePrefix() => $event->getContent()];
         
         if ($template->hasCollectionQuery()) {
             foreach ($template->getCollectionQuery() as $name => $query) {

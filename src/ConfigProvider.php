@@ -11,53 +11,25 @@ class ConfigProvider
     public function __invoke(): array
     {
         return [
-            "apps" => $this->getAppsConfig(),
             "commands" => $this->getCommands(),
             "dependencies" => $this->getDependencies(),
             "events" => $this->getEventsConfig(),
+            "navigation" => $this->getNavigationConfig(),
             "loggers" => $this->getLoggers(),
         ];
     }
 
-    private function getAppsConfig(): array
+    private function getNavigationConfig(): array
     {
         return [
-            "marshal::content" => [
-                "route_prefix" => "content",
-                "routes" => [
-                    "/{app}[/{schema}]" => [
-                        "methods" => ["GET", "POST"],
-                        "middleware" => [
-                            Middleware\ContentAuthorizationMiddleware::class,
-                            Handler\ContentPageHandler::class,
-                        ],
-                        "name" => "marshal::content-page",
+            "paths" => [
+                "/content/{app}[/{schema}]" => [
+                    "methods" => ["GET", "POST"],
+                    "middleware" => [
+                        Middleware\ContentAuthorizationMiddleware::class,
+                        Handler\ContentPageHandler::class,
                     ],
-                ],
-            ],
-            "marshal::admin" => [
-                "routes" => [
-                    "/content" => [
-                        "methods" => ["GET", "POST"],
-                        "middleware" => [
-                            Middleware\ContentAdministrationMiddleware::class,
-                            Handler\ContentAdministrationHandler::class,
-                        ],
-                        "name" => "marshal::content-admin",
-                        "options" => [
-                            "template" => "marshal::content-admin-page",
-                        ],
-                    ],
-                    "/content/migration" => [
-                        "method" => ["GET"],
-                        "middleware" => [
-                            Middleware\ContentAdministrationMiddleware::class,
-                            Middleware\ContentAuthorizationMiddleware::class,
-                            Handler\ContentMigrationHandler::class,
-                        ],
-                        "name" => "marshal::content-migration-admin-page",
-                        "options" => [],
-                    ],
+                    "name" => "marshal::content-page",
                 ],
             ],
         ];

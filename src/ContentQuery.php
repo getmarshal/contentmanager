@@ -23,9 +23,9 @@ final class ContentQuery
         }
     }
 
-    public function columns(array $columns): static
+    public function columns(string $schema, array $columns): static
     {
-        $this->columns = $columns;
+        $this->columns[$schema] = $columns;
         return $this;
     }
 

@@ -81,7 +81,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
                 continue;
             }
 
-            $this->attachRelationSelect($queryBuilder, $property, $table, $duplicates);
+            $this->applyRelations($queryBuilder, $property, $table, $duplicates);
         }
 
         // apply query arguments
@@ -107,6 +107,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
 
         $platform = $connection->getDatabasePlatform();
         $toArray = $query->getToArray();
+
         return Collection::fromCallable(static function () use ($iterable, $toArray, $content, $platform): \Generator {
             foreach ($iterable as $row) {
                 yield $toArray
@@ -124,7 +125,9 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
         $table = $content->getType()->getTable();
         $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->select("$table.*")->from($table, $table);
+        $queryBuilder->select("$table.*")
+            ->from($table, $table)
+            ->setMaxResults(1);
 
         $duplicates = [];
         foreach ($content->getProperties() as $property) {
@@ -132,13 +135,18 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
                 continue;
             }
 
-            $this->attachRelationSelect($queryBuilder, $property, $table, $duplicates);
+            $this->applyRelations($queryBuilder, $property, $table, $duplicates);
         }
 
         // apply query arguments
         $this->applyQueryArgs($queryBuilder, $content, $query);
 
-        $result = $queryBuilder->setMaxResults(1)->executeQuery()->fetchAssociative();
+        $this->getEventDispatcher()->dispatch(new SQLQueryEvent(
+            sql: $queryBuilder->getSQL(),
+            params: $queryBuilder->getParameters(),
+        ));
+
+        $result = $queryBuilder->executeQuery()->fetchAssociative();
         if (! empty($result)) {
             $content->hydrate($result, $connection->getDatabasePlatform());
         }
@@ -226,7 +234,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
         }
     }
 
-    private function attachRelationSelect(QueryBuilder $queryBuilder, Property $property, string $table, array &$duplicates): void
+    private function applyRelations(QueryBuilder $queryBuilder, Property $property, string $table, array &$duplicates): void
     {
         $duplicates[] = $property->getRelation()->getAlias();
 
@@ -253,7 +261,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
             }
 
             $duplicates[] = $innerProperty->getRelation()->getAlias();
-            $this->attachRelationSelect($queryBuilder, $innerProperty, $property->getRelation()->getAlias(), $duplicates);
+            $this->applyRelations($queryBuilder, $innerProperty, $property->getRelation()->getAlias(), $duplicates);
         }
     }
 
@@ -271,7 +279,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
             }
 
             if ($subValue instanceof Content) {
-                $this->buildContentValue($queryBuilder, $property, $key, $subValue);
+                $this->buildScalarValue($queryBuilder, $property, $key, $subValue->getAutoId());
                 continue;
             }
 
@@ -292,19 +300,6 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
         }
     }
 
-    private function buildContentValue(QueryBuilder $queryBuilder, Property $property, string $name, Content $value): void
-    {
-        $queryBuilder->andWhere(
-            $queryBuilder->expr()->eq(
-                $property->getName() . '.' . $name,
-                $queryBuilder->createNamedParameter(
-                    $value->getAutoId(),
-                    $property->getDatabaseType()->getBindingType()
-                )
-            )
-        );
-    }
-
     private function buildModifiedProperty(QueryBuilder $queryBuilder, Type $type, string $arg, mixed $value): void
     {
         $split = \explode('__', $arg);
@@ -314,8 +309,8 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
             return;
         }
 
-        $modifiers = ['gt', 'gte', 'in', 'isnull', 'lt', 'lte', 'notIn'];
-        if (! \in_array($split[1], $modifiers, true)) {
+        $modifiers = ['gt', 'gte', 'in', 'isnull', 'lt', 'lte', 'notin'];
+        if (! \in_array(\strtolower($split[1]), $modifiers, true)) {
             if ($type->hasProperty($split[0])) {
                 $queryBuilder->andWhere(
                     $queryBuilder->expr()->eq("$split[0].$split[1]", $queryBuilder->createNamedParameter((string) $value))
@@ -326,7 +321,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
 
         $table = $type->getTable();
         $column = "$table.$split[0]";
-        switch ($split[1]) {
+        switch (\strtolower($split[1])) {
             case 'gt':
                 $queryBuilder->andWhere($queryBuilder->expr()->gt(
                     $column,
@@ -370,7 +365,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
                 ));
                 break;
 
-            case 'notIn':
+            case 'notin':
                 $queryBuilder->andWhere($queryBuilder->expr()->notIn(
                     $column,
                     \array_map(static fn (string $property): string => "'$property'", $value))
@@ -389,6 +384,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
             foreach ($arg as $key => $value) {
                 if ($value instanceof Content) {
                     $queryBuilder->setParameter($key, $value->getType()->getAutoIncrement()->getValue());
+                    continue;
                 }
 
                 if (\is_scalar($value)) {

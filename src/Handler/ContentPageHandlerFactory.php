@@ -6,7 +6,7 @@ namespace Marshal\ContentManager\Handler;
 
 use Marshal\Application\AppManager;
 use Marshal\ContentManager\ContentManager;
-use Marshal\Platform\Web\Render\TemplateManager;
+use Marshal\Server\Platform\Web\Template\TemplateManager;
 use Psr\Container\ContainerInterface;
 
 final class ContentPageHandlerFactory
