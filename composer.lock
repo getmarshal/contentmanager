@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5d5032aba8b5b4fff897d62e704479e5",
+    "content-hash": "5a778d1268ce355c579339ff56bd5011",
     "packages": [
         {
             "name": "doctrine/dbal",
@@ -674,23 +674,163 @@
             "time": "2024-09-21T08:32:55+00:00"
         },
         {
-            "name": "marshal/utils",
-            "version": "v0.0.3",
+            "name": "loophp/collection",
+            "version": "7.6.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/getmarshal/utils.git",
-                "reference": "ec22012651e01bcd3f9e9413f907e2f0fb83d8ba"
+                "url": "https://github.com/loophp/collection.git",
+                "reference": "8448fdd1c82e6e72d1edd51f358cea72ba983817"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getmarshal/utils/zipball/ec22012651e01bcd3f9e9413f907e2f0fb83d8ba",
-                "reference": "ec22012651e01bcd3f9e9413f907e2f0fb83d8ba",
+                "url": "https://api.github.com/repos/loophp/collection/zipball/8448fdd1c82e6e72d1edd51f358cea72ba983817",
+                "reference": "8448fdd1c82e6e72d1edd51f358cea72ba983817",
+                "shasum": ""
+            },
+            "require": {
+                "loophp/iterators": "^3.2.0",
+                "php": ">= 8.1"
+            },
+            "require-dev": {
+                "amphp/parallel-functions": "^1",
+                "doctrine/collections": "^2",
+                "drupol/php-conventions": "^5",
+                "ext-pcov": "*",
+                "infection/infection": "^0.27 || ^0.28 || ^0.29",
+                "loophp/phpunit-iterable-assertions": "^1.0",
+                "phpstan/phpstan-strict-rules": "^1.0",
+                "phpunit/php-code-coverage": "^10",
+                "phpunit/phpunit": "^10",
+                "psr/cache": "^2.0 || 3.0",
+                "symfony/cache": "^6",
+                "vimeo/psalm": "^5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "loophp\\collection\\": "./src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Pol Dellaiera",
+                    "email": "pol.dellaiera@protonmail.com",
+                    "homepage": "https://not-a-number.io",
+                    "role": "author"
+                },
+                {
+                    "name": "Alex Gidei",
+                    "homepage": "https://github.com/AlexandruGG",
+                    "role": "maintainer"
+                }
+            ],
+            "description": "A (memory) friendly, easy, lazy and modular collection class.",
+            "homepage": "https://github.com/loophp/collection",
+            "keywords": [
+                "collection",
+                "generator",
+                "iterator",
+                "yield"
+            ],
+            "support": {
+                "docs": "https://loophp-collection.rtfd.io",
+                "issues": "https://github.com/loophp/collection/issues",
+                "source": "https://github.com/loophp/collection"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/drupol",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-08-27T16:18:05+00:00"
+        },
+        {
+            "name": "loophp/iterators",
+            "version": "3.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/loophp/iterators.git",
+                "reference": "a0ba41c111f9c3eb09642ad9260cd6753edeb3e0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/loophp/iterators/zipball/a0ba41c111f9c3eb09642ad9260cd6753edeb3e0",
+                "reference": "a0ba41c111f9c3eb09642ad9260cd6753edeb3e0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 8.1"
+            },
+            "require-dev": {
+                "drupol/php-conventions": "^5",
+                "ext-pcov": "*",
+                "phpbench/phpbench": "^1.2",
+                "phpstan/phpstan-strict-rules": "^1.0",
+                "phpunit/php-code-coverage": "^10",
+                "phpunit/phpunit": "^10"
+            },
+            "suggest": {
+                "ext-mbstring": "For UTF-8 support in the StringIteratorAggregate."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "loophp\\iterators\\": "./src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Pol Dellaiera",
+                    "email": "pol.dellaiera@protonmail.com",
+                    "homepage": "https://not-a-number.io",
+                    "role": "author"
+                }
+            ],
+            "description": "The missing PHP iterators.",
+            "homepage": "https://github.com/loophp/iterators",
+            "keywords": [
+                "iterators"
+            ],
+            "support": {
+                "issues": "https://github.com/loophp/iterators/issues",
+                "source": "https://github.com/loophp/iterators"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/drupol",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-08-27T16:04:50+00:00"
+        },
+        {
+            "name": "marshal/utils",
+            "version": "v0.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/getmarshal/utils.git",
+                "reference": "2b852c0840bc5f8ad4cf359da9a85d3e5c8e1633"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/getmarshal/utils/zipball/2b852c0840bc5f8ad4cf359da9a85d3e5c8e1633",
+                "reference": "2b852c0840bc5f8ad4cf359da9a85d3e5c8e1633",
                 "shasum": ""
             },
             "require": {
                 "doctrine/dbal": "^4.3",
                 "guzzlehttp/guzzle": "^7.9",
                 "league/flysystem": "^3.30",
+                "loophp/collection": "^7.6",
                 "monolog/monolog": "^3.9",
                 "psr/container": "1.*",
                 "psr/event-dispatcher": "^1.0",
@@ -716,9 +856,9 @@
             "description": "Utilities package for Marshal",
             "support": {
                 "issues": "https://github.com/getmarshal/utils/issues",
-                "source": "https://github.com/getmarshal/utils/tree/v0.0.3"
+                "source": "https://github.com/getmarshal/utils/tree/v0.0.4"
             },
-            "time": "2025-12-10T11:58:06+00:00"
+            "time": "2025-12-10T12:16:24+00:00"
         },
         {
             "name": "monolog/monolog",
