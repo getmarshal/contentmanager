@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Marshal\ContentManager\Event;
 
 use loophp\collection\Collection;
-use Marshal\EventManager\EventParametersTrait;
 
 class ReadCollectionEvent
 {

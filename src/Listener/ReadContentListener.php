@@ -8,20 +8,11 @@ use Marshal\ContentManager\ContentQuery;
 use Marshal\ContentManager\ContentRepository;
 use Marshal\ContentManager\Event\ReadCollectionEvent;
 use Marshal\ContentManager\Event\ReadContentEvent;
-use Marshal\EventManager\EventListenerInterface;
 
-class ReadContentListener implements EventListenerInterface
+class ReadContentListener
 {
     public function __construct(private ContentRepository $contentRepository)
     {
-    }
-
-    public function getListeners(): array
-    {
-        return [
-            ReadContentEvent::class => ['listener' => [$this, 'onReadContent']],
-            ReadCollectionEvent::class => ['listener' => [$this, 'onReadCollection']],
-        ];
     }
 
     public function onReadCollection(ReadCollectionEvent $event): void

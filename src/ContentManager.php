@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Marshal\ContentManager;
 
-use Marshal\Util\Database\Schema\SchemaManager;
+use Marshal\Utils\Database\Schema\SchemaManager;
 
 final class ContentManager
 {

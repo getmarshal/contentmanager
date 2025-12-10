@@ -2,28 +2,25 @@
     "name": "marshal/contentmanager",
     "description": "Content manager module for Marshal",
     "type": "library",
-    "license": "MIT",
+    "license": "AGPL-3.0-or-later",
     "autoload": {
         "psr-4": {
             "Marshal\\ContentManager\\": "src/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "authors": [
         {
             "name": "Collins Pamba",
             "email": "collinspamba@outlook.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../utils"
-        }
-    ],
+    "config": {
+        "sort-packages": true
+    },
     "require-dev": {
-        "marshal/util": "dev-master",
         "phpstan/phpstan": "^2.1"
+    },
+    "require": {
+        "marshal/utils": "^0.0.3"
     }
 }

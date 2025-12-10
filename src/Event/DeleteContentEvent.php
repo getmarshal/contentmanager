@@ -12,6 +12,8 @@ use Marshal\ContentManager\Content;
 
 class DeleteContentEvent
 {
+    use ErrorMessagesTrait;
+
     private bool $isSuccess = FALSE;
 
     public function __construct(private Content $content)

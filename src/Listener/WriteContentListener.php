@@ -12,15 +12,9 @@ use Marshal\ContentManager\Event\DeleteCollectionEvent;
 use Marshal\ContentManager\Event\DeleteContentEvent;
 use Marshal\ContentManager\Event\UpdateContentEvent;
 use Marshal\ContentManager\InputFilter\ContentInputFilter;
-use Marshal\EventManager\EventListenerInterface;
-use Marshal\Util\Logger\LoggerFactoryAwareInterface;
-use Marshal\Util\Logger\LoggerFactoryAwareTrait;
-use Marshal\ContentManager\Content;
 
-class WriteContentListener implements EventListenerInterface, LoggerFactoryAwareInterface
+class WriteContentListener
 {
-    use LoggerFactoryAwareTrait;
-
     private const string CONTENT_LOGGER = 'marshal::content';
 
     public function __construct(
@@ -28,16 +22,6 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         private ContentManager $contentManager,
         private ValidatorPluginManager $validatorPluginManager
     ) {
-    }
-
-    public function getListeners(): array
-    {
-        return [
-            CreateContentEvent::class => ['listener' => [$this, 'onCreateContent']],
-            UpdateContentEvent::class => ['listener' => [$this, 'onUpdateContent']],
-            DeleteCollectionEvent::class => ['listener' => [$this, 'onDeleteCollectionEvent']],
-            DeleteContentEvent::class => ['listener' => [$this, 'onDeleteContent']],
-        ];
     }
 
     public function onCreateContent(CreateContentEvent $event): void
@@ -71,8 +55,6 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         $result = $this->contentRepository->create($content);
         if (! \is_numeric($result)) {
             $event->setErrorMessage('create', "Error saving content");
-            $this->getLogger(self::CONTENT_LOGGER)
-                ->error("Error saving content", $event->getParams());
             return;
         }
 
@@ -90,7 +72,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
 
         $result = $query->executeStatement();
         if (! \is_numeric($result)) {
-            $this->getLogger(self::CONTENT_LOGGER)->error("Error deleting content", []);
+            $event->setErrorMessage('error', "Error deleting content");
             return;
         }
 
@@ -107,7 +89,7 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
 
         $result = $query->executeStatement();
         if (! \is_numeric($result)) {
-            $this->getLogger(self::CONTENT_LOGGER)->error("Error deleting content", $event->getParams());
+            $event->setErrorMessage('error', "Error deleting content");
             return;
         }
 
@@ -153,7 +135,6 @@ class WriteContentListener implements EventListenerInterface, LoggerFactoryAware
         $update = $this->contentRepository->update($content, $inputFilter->getValues());
         if (! \is_numeric($update) || \intval($update) < 1) {
             $event->setErrorMessage('update', "Error updating content");
-            $this->getLogger(self::CONTENT_LOGGER)->error("Error updating content", $event->getParams());
             return;
         }
 

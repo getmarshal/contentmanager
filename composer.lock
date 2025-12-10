@@ -4,132 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db0f51d8cfb977a2ab244c027fe98c2f",
-    "packages": [],
-    "packages-dev": [
-        {
-            "name": "brick/varexporter",
-            "version": "0.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/brick/varexporter.git",
-                "reference": "af98bfc2b702a312abbcaff37656dbe419cec5bc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/brick/varexporter/zipball/af98bfc2b702a312abbcaff37656dbe419cec5bc",
-                "reference": "af98bfc2b702a312abbcaff37656dbe419cec5bc",
-                "shasum": ""
-            },
-            "require": {
-                "nikic/php-parser": "^5.0",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "php-coveralls/php-coveralls": "^2.2",
-                "phpunit/phpunit": "^10.5",
-                "vimeo/psalm": "6.8.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Brick\\VarExporter\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "A powerful alternative to var_export(), which can export closures and objects without __set_state()",
-            "keywords": [
-                "var_export"
-            ],
-            "support": {
-                "issues": "https://github.com/brick/varexporter/issues",
-                "source": "https://github.com/brick/varexporter/tree/0.6.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/BenMorel",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-02-20T17:42:39+00:00"
-        },
-        {
-            "name": "dflydev/fig-cookies",
-            "version": "v3.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dflydev/dflydev-fig-cookies.git",
-                "reference": "ebe6c15c9895fc490efe620ad734c8ef4a85bdb0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dflydev/dflydev-fig-cookies/zipball/ebe6c15c9895fc490efe620ad734c8ef4a85bdb0",
-                "reference": "ebe6c15c9895fc490efe620ad734c8ef4a85bdb0",
-                "shasum": ""
-            },
-            "require": {
-                "ext-pcre": "*",
-                "php": "^7.2 || ^8.0",
-                "psr/http-message": "^1.0.1 || ^2"
-            },
-            "require-dev": {
-                "doctrine/coding-standard": "^8",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^0.12",
-                "phpstan/phpstan-phpunit": "^0.12.16",
-                "phpunit/phpunit": "^7.2.6 || ^9",
-                "scrutinizer/ocular": "^1.8",
-                "squizlabs/php_codesniffer": "^3.3",
-                "vimeo/psalm": "^4.4"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "3.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Dflydev\\FigCookies\\": "src/Dflydev/FigCookies"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Beau Simensen",
-                    "email": "beau@dflydev.com"
-                }
-            ],
-            "description": "Cookies for PSR-7 HTTP Message Interface.",
-            "keywords": [
-                "cookies",
-                "psr-7",
-                "psr7"
-            ],
-            "support": {
-                "issues": "https://github.com/dflydev/dflydev-fig-cookies/issues",
-                "source": "https://github.com/dflydev/dflydev-fig-cookies/tree/v3.1.0"
-            },
-            "time": "2023-07-18T20:41:43+00:00"
-        },
+    "content-hash": "5d5032aba8b5b4fff897d62e704479e5",
+    "packages": [
         {
             "name": "doctrine/dbal",
-            "version": "4.3.1",
+            "version": "4.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "ac336c95ea9e13433d56ca81c308b39db0e1a2a7"
+                "reference": "3d544473fb93f5c25b483ea4f4ce99f8c4d9d44c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/ac336c95ea9e13433d56ca81c308b39db0e1a2a7",
-                "reference": "ac336c95ea9e13433d56ca81c308b39db0e1a2a7",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/3d544473fb93f5c25b483ea4f4ce99f8c4d9d44c",
+                "reference": "3d544473fb93f5c25b483ea4f4ce99f8c4d9d44c",
                 "shasum": ""
             },
             "require": {
@@ -139,17 +27,17 @@
                 "psr/log": "^1|^2|^3"
             },
             "require-dev": {
-                "doctrine/coding-standard": "13.0.0",
+                "doctrine/coding-standard": "14.0.0",
                 "fig/log-test": "^1",
                 "jetbrains/phpstorm-stubs": "2023.2",
-                "phpstan/phpstan": "2.1.17",
-                "phpstan/phpstan-phpunit": "2.0.6",
+                "phpstan/phpstan": "2.1.30",
+                "phpstan/phpstan-phpunit": "2.0.7",
                 "phpstan/phpstan-strict-rules": "^2",
                 "phpunit/phpunit": "11.5.23",
-                "slevomat/coding-standard": "8.16.2",
-                "squizlabs/php_codesniffer": "3.13.1",
-                "symfony/cache": "^6.3.8|^7.0",
-                "symfony/console": "^5.4|^6.3|^7.0"
+                "slevomat/coding-standard": "8.24.0",
+                "squizlabs/php_codesniffer": "4.0.0",
+                "symfony/cache": "^6.3.8|^7.0|^8.0",
+                "symfony/console": "^5.4|^6.3|^7.0|^8.0"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -206,7 +94,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/4.3.1"
+                "source": "https://github.com/doctrine/dbal/tree/4.4.1"
             },
             "funding": [
                 {
@@ -222,7 +110,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-22T10:09:51+00:00"
+            "time": "2025-12-04T10:11:03+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -273,79 +161,23 @@
             "time": "2025-04-07T20:06:18+00:00"
         },
         {
-            "name": "fig/http-message-util",
-            "version": "1.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/http-message-util.git",
-                "reference": "9d94dc0154230ac39e5bf89398b324a86f63f765"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-message-util/zipball/9d94dc0154230ac39e5bf89398b324a86f63f765",
-                "reference": "9d94dc0154230ac39e5bf89398b324a86f63f765",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.3 || ^7.0 || ^8.0"
-            },
-            "suggest": {
-                "psr/http-message": "The package containing the PSR-7 interfaces"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Fig\\Http\\Message\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "https://www.php-fig.org/"
-                }
-            ],
-            "description": "Utility classes and constants for use with PSR-7 (psr/http-message)",
-            "keywords": [
-                "http",
-                "http-message",
-                "psr",
-                "psr-7",
-                "request",
-                "response"
-            ],
-            "support": {
-                "issues": "https://github.com/php-fig/http-message-util/issues",
-                "source": "https://github.com/php-fig/http-message-util/tree/1.1.5"
-            },
-            "time": "2020-11-24T22:02:12+00:00"
-        },
-        {
             "name": "guzzlehttp/guzzle",
-            "version": "7.9.3",
+            "version": "7.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "7b2f29fe81dc4da0ca0ea7d42107a0845946ea77"
+                "reference": "b51ac707cfa420b7bfd4e4d5e510ba8008e822b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/7b2f29fe81dc4da0ca0ea7d42107a0845946ea77",
-                "reference": "7b2f29fe81dc4da0ca0ea7d42107a0845946ea77",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/b51ac707cfa420b7bfd4e4d5e510ba8008e822b4",
+                "reference": "b51ac707cfa420b7bfd4e4d5e510ba8008e822b4",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "guzzlehttp/promises": "^1.5.3 || ^2.0.3",
-                "guzzlehttp/psr7": "^2.7.0",
+                "guzzlehttp/promises": "^2.3",
+                "guzzlehttp/psr7": "^2.8",
                 "php": "^7.2.5 || ^8.0",
                 "psr/http-client": "^1.0",
                 "symfony/deprecation-contracts": "^2.2 || ^3.0"
@@ -436,7 +268,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.9.3"
+                "source": "https://github.com/guzzle/guzzle/tree/7.10.0"
             },
             "funding": [
                 {
@@ -452,20 +284,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-03-27T13:37:11+00:00"
+            "time": "2025-08-23T22:36:01+00:00"
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "7c69f28996b0a6920945dd20b3857e499d9ca96c"
+                "reference": "481557b130ef3790cf82b713667b43030dc9c957"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/7c69f28996b0a6920945dd20b3857e499d9ca96c",
-                "reference": "7c69f28996b0a6920945dd20b3857e499d9ca96c",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/481557b130ef3790cf82b713667b43030dc9c957",
+                "reference": "481557b130ef3790cf82b713667b43030dc9c957",
                 "shasum": ""
             },
             "require": {
@@ -473,7 +305,7 @@
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
-                "phpunit/phpunit": "^8.5.39 || ^9.6.20"
+                "phpunit/phpunit": "^8.5.44 || ^9.6.25"
             },
             "type": "library",
             "extra": {
@@ -519,7 +351,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/promises/issues",
-                "source": "https://github.com/guzzle/promises/tree/2.2.0"
+                "source": "https://github.com/guzzle/promises/tree/2.3.0"
             },
             "funding": [
                 {
@@ -535,20 +367,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-03-27T13:27:01+00:00"
+            "time": "2025-08-22T14:34:08+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.7.1",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "c2270caaabe631b3b44c85f99e5a04bbb8060d16"
+                "reference": "21dc724a0583619cd1652f673303492272778051"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/c2270caaabe631b3b44c85f99e5a04bbb8060d16",
-                "reference": "c2270caaabe631b3b44c85f99e5a04bbb8060d16",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/21dc724a0583619cd1652f673303492272778051",
+                "reference": "21dc724a0583619cd1652f673303492272778051",
                 "shasum": ""
             },
             "require": {
@@ -564,7 +396,7 @@
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
                 "http-interop/http-factory-tests": "0.9.0",
-                "phpunit/phpunit": "^8.5.39 || ^9.6.20"
+                "phpunit/phpunit": "^8.5.44 || ^9.6.25"
             },
             "suggest": {
                 "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
@@ -635,7 +467,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.7.1"
+                "source": "https://github.com/guzzle/psr7/tree/2.8.0"
             },
             "funding": [
                 {
@@ -651,614 +483,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-03-27T12:30:47+00:00"
-        },
-        {
-            "name": "laminas/laminas-config-aggregator",
-            "version": "1.18.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-config-aggregator.git",
-                "reference": "a5cc009f58daa4e1b968abd65972fa3a481c22c5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-config-aggregator/zipball/a5cc009f58daa4e1b968abd65972fa3a481c22c5",
-                "reference": "a5cc009f58daa4e1b968abd65972fa3a481c22c5",
-                "shasum": ""
-            },
-            "require": {
-                "brick/varexporter": "^0.5.0 || ^0.4.0 || ^0.6.0",
-                "laminas/laminas-stdlib": "^3.18.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-                "webimpress/safe-writer": "^2.2.0"
-            },
-            "conflict": {
-                "nikic/php-parser": "<4.12",
-                "zendframework/zend-config-aggregator": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "~3.0.1",
-                "laminas/laminas-config": "^3.10.1",
-                "phpunit/phpunit": "^10.5.45",
-                "psalm/plugin-phpunit": "^0.19.2",
-                "vimeo/psalm": "^6.8.6"
-            },
-            "suggest": {
-                "laminas/laminas-config": "Allows loading configuration from XML, INI, YAML, and JSON files",
-                "laminas/laminas-config-aggregator-modulemanager": "Allows loading configuration from laminas-mvc Module classes",
-                "laminas/laminas-config-aggregator-parameters": "Allows usage of templated parameters within your configuration"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\ConfigAggregator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Lightweight library for collecting and merging configuration from different sources",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "config-aggregator",
-                "laminas"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-config-aggregator/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-config-aggregator/issues",
-                "rss": "https://github.com/laminas/laminas-config-aggregator/releases.atom",
-                "source": "https://github.com/laminas/laminas-config-aggregator"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-02-21T18:18:40+00:00"
-        },
-        {
-            "name": "laminas/laminas-filter",
-            "version": "2.41.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-filter.git",
-                "reference": "eaa00111231bf6669826ae84d3abe85b94477585"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-filter/zipball/eaa00111231bf6669826ae84d3abe85b94477585",
-                "reference": "eaa00111231bf6669826ae84d3abe85b94477585",
-                "shasum": ""
-            },
-            "require": {
-                "ext-mbstring": "*",
-                "laminas/laminas-servicemanager": "^3.21.0",
-                "laminas/laminas-stdlib": "^3.19.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
-            },
-            "conflict": {
-                "laminas/laminas-validator": "<2.10.1",
-                "zendframework/zend-filter": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "~3.0",
-                "laminas/laminas-crypt": "^3.12",
-                "laminas/laminas-i18n": "^2.28.1",
-                "laminas/laminas-uri": "^2.12",
-                "pear/archive_tar": "^1.5.0",
-                "phpunit/phpunit": "^10.5.36",
-                "psalm/plugin-phpunit": "^0.19.0",
-                "psr/http-factory": "^1.1.0",
-                "vimeo/psalm": "^5.26.1"
-            },
-            "suggest": {
-                "laminas/laminas-crypt": "Laminas\\Crypt component, for encryption filters",
-                "laminas/laminas-i18n": "Laminas\\I18n component for filters depending on i18n functionality",
-                "laminas/laminas-uri": "Laminas\\Uri component, for the UriNormalize filter",
-                "psr/http-factory-implementation": "psr/http-factory-implementation, for creating file upload instances when consuming PSR-7 in file upload filters"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "component": "Laminas\\Filter",
-                    "config-provider": "Laminas\\Filter\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\Filter\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Programmatically filter and normalize data and files",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "filter",
-                "laminas"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-filter/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-filter/issues",
-                "rss": "https://github.com/laminas/laminas-filter/releases.atom",
-                "source": "https://github.com/laminas/laminas-filter"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-05-05T02:02:31+00:00"
-        },
-        {
-            "name": "laminas/laminas-i18n",
-            "version": "2.30.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-i18n.git",
-                "reference": "397907ee061e147939364df9d6c485ac1e0fed87"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-i18n/zipball/397907ee061e147939364df9d6c485ac1e0fed87",
-                "reference": "397907ee061e147939364df9d6c485ac1e0fed87",
-                "shasum": ""
-            },
-            "require": {
-                "ext-intl": "*",
-                "laminas/laminas-servicemanager": "^3.21.0",
-                "laminas/laminas-stdlib": "^3.0",
-                "laminas/laminas-translator": "^1.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
-            },
-            "conflict": {
-                "laminas/laminas-view": "<2.20.0",
-                "zendframework/zend-i18n": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-cache": "^3.13.0",
-                "laminas/laminas-cache-storage-adapter-memory": "^2.4.0",
-                "laminas/laminas-cache-storage-deprecated-factory": "^1.3",
-                "laminas/laminas-coding-standard": "~2.5.0",
-                "laminas/laminas-config": "^3.10.1",
-                "laminas/laminas-eventmanager": "^3.14.0",
-                "laminas/laminas-filter": "^2.40",
-                "laminas/laminas-validator": "^2.64.2",
-                "laminas/laminas-view": "^2.36",
-                "phpunit/phpunit": "^10.5.45",
-                "psalm/plugin-phpunit": "^0.19.5",
-                "vimeo/psalm": "^6.10.0"
-            },
-            "suggest": {
-                "laminas/laminas-cache": "You should install this package to cache the translations",
-                "laminas/laminas-config": "You should install this package to use the INI translation format",
-                "laminas/laminas-eventmanager": "You should install this package to use the events in the translator",
-                "laminas/laminas-filter": "You should install this package to use the provided filters",
-                "laminas/laminas-i18n-resources": "This package provides validator and captcha translations",
-                "laminas/laminas-validator": "You should install this package to use the provided validators",
-                "laminas/laminas-view": "You should install this package to use the provided view helpers"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "component": "Laminas\\I18n",
-                    "config-provider": "Laminas\\I18n\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\I18n\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Provide translations for your application, and filter and validate internationalized values",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "i18n",
-                "laminas"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-i18n/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-i18n/issues",
-                "rss": "https://github.com/laminas/laminas-i18n/releases.atom",
-                "source": "https://github.com/laminas/laminas-i18n"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-04-15T09:07:02+00:00"
-        },
-        {
-            "name": "laminas/laminas-inputfilter",
-            "version": "2.33.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-inputfilter.git",
-                "reference": "928afe6f5e7c7a17f9c02c40d4feca92944d8e2f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-inputfilter/zipball/928afe6f5e7c7a17f9c02c40d4feca92944d8e2f",
-                "reference": "928afe6f5e7c7a17f9c02c40d4feca92944d8e2f",
-                "shasum": ""
-            },
-            "require": {
-                "laminas/laminas-filter": "^2.19",
-                "laminas/laminas-servicemanager": "^3.21.0",
-                "laminas/laminas-stdlib": "^3.19",
-                "laminas/laminas-validator": "^2.60.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-                "psr/container": "^1.1 || ^2.0"
-            },
-            "conflict": {
-                "zendframework/zend-inputfilter": "*"
-            },
-            "require-dev": {
-                "ext-json": "*",
-                "laminas/laminas-coding-standard": "^3.1.0",
-                "phpunit/phpunit": "^10.5.46",
-                "psalm/plugin-phpunit": "^0.19.5",
-                "psr/http-message": "^2.0",
-                "vimeo/psalm": "^6.11.0",
-                "webmozart/assert": "^1.11"
-            },
-            "suggest": {
-                "psr/http-message-implementation": "PSR-7 is required if you wish to validate PSR-7 UploadedFileInterface payloads"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "component": "Laminas\\InputFilter",
-                    "config-provider": "Laminas\\InputFilter\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\InputFilter\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Normalize and validate input sets from the web, APIs, the CLI, and more, including files",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "inputfilter",
-                "laminas"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-inputfilter/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-inputfilter/issues",
-                "rss": "https://github.com/laminas/laminas-inputfilter/releases.atom",
-                "source": "https://github.com/laminas/laminas-inputfilter"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-05-27T09:48:19+00:00"
-        },
-        {
-            "name": "laminas/laminas-servicemanager",
-            "version": "3.23.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-servicemanager.git",
-                "reference": "a8640182b892b99767d54404d19c5c3b3699f79b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-servicemanager/zipball/a8640182b892b99767d54404d19c5c3b3699f79b",
-                "reference": "a8640182b892b99767d54404d19c5c3b3699f79b",
-                "shasum": ""
-            },
-            "require": {
-                "laminas/laminas-stdlib": "^3.19",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-                "psr/container": "^1.0"
-            },
-            "conflict": {
-                "ext-psr": "*",
-                "laminas/laminas-code": "<4.10.0",
-                "zendframework/zend-code": "<3.3.1",
-                "zendframework/zend-servicemanager": "*"
-            },
-            "provide": {
-                "psr/container-implementation": "^1.0"
-            },
-            "replace": {
-                "container-interop/container-interop": "^1.2.0"
-            },
-            "require-dev": {
-                "composer/package-versions-deprecated": "^1.11.99.5",
-                "friendsofphp/proxy-manager-lts": "^1.0.18",
-                "laminas/laminas-code": "^4.14.0",
-                "laminas/laminas-coding-standard": "~2.5.0",
-                "laminas/laminas-container-config-test": "^0.8",
-                "mikey179/vfsstream": "^1.6.12",
-                "phpbench/phpbench": "^1.3.1",
-                "phpunit/phpunit": "^10.5.36",
-                "psalm/plugin-phpunit": "^0.18.4",
-                "vimeo/psalm": "^5.26.1"
-            },
-            "suggest": {
-                "friendsofphp/proxy-manager-lts": "ProxyManager ^2.1.1 to handle lazy initialization of services"
-            },
-            "bin": [
-                "bin/generate-deps-for-config-factory",
-                "bin/generate-factory-for-class"
-            ],
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "src/autoload.php"
-                ],
-                "psr-4": {
-                    "Laminas\\ServiceManager\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Factory-Driven Dependency Injection Container",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "PSR-11",
-                "dependency-injection",
-                "di",
-                "dic",
-                "laminas",
-                "service-manager",
-                "servicemanager"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-servicemanager/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-servicemanager/issues",
-                "rss": "https://github.com/laminas/laminas-servicemanager/releases.atom",
-                "source": "https://github.com/laminas/laminas-servicemanager"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2024-10-28T21:32:16+00:00"
-        },
-        {
-            "name": "laminas/laminas-stdlib",
-            "version": "3.20.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-stdlib.git",
-                "reference": "8974a1213be42c3e2f70b2c27b17f910291ab2f4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-stdlib/zipball/8974a1213be42c3e2f70b2c27b17f910291ab2f4",
-                "reference": "8974a1213be42c3e2f70b2c27b17f910291ab2f4",
-                "shasum": ""
-            },
-            "require": {
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
-            },
-            "conflict": {
-                "zendframework/zend-stdlib": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "^3.0",
-                "phpbench/phpbench": "^1.3.1",
-                "phpunit/phpunit": "^10.5.38",
-                "psalm/plugin-phpunit": "^0.19.0",
-                "vimeo/psalm": "^5.26.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\Stdlib\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "SPL extensions, array utilities, error handlers, and more",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "laminas",
-                "stdlib"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-stdlib/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-stdlib/issues",
-                "rss": "https://github.com/laminas/laminas-stdlib/releases.atom",
-                "source": "https://github.com/laminas/laminas-stdlib"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2024-10-29T13:46:07+00:00"
-        },
-        {
-            "name": "laminas/laminas-translator",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-translator.git",
-                "reference": "12897e710e21413c1f93fc38fe9dead6b51c5218"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-translator/zipball/12897e710e21413c1f93fc38fe9dead6b51c5218",
-                "reference": "12897e710e21413c1f93fc38fe9dead6b51c5218",
-                "shasum": ""
-            },
-            "require": {
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "~3.0.0",
-                "vimeo/psalm": "^5.24.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\Translator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Interfaces for the Translator component of laminas-i18n",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "i18n",
-                "laminas"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-i18n/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-translator/issues",
-                "rss": "https://github.com/laminas/laminas-translator/releases.atom",
-                "source": "https://github.com/laminas/laminas-translator"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2024-10-21T15:33:01+00:00"
-        },
-        {
-            "name": "laminas/laminas-validator",
-            "version": "2.64.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-validator.git",
-                "reference": "e2e6631f599a9b0db1e23adb633c09a2f0c68bed"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-validator/zipball/e2e6631f599a9b0db1e23adb633c09a2f0c68bed",
-                "reference": "e2e6631f599a9b0db1e23adb633c09a2f0c68bed",
-                "shasum": ""
-            },
-            "require": {
-                "laminas/laminas-servicemanager": "^3.21.0",
-                "laminas/laminas-stdlib": "^3.19",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-                "psr/http-message": "^1.0.1 || ^2.0.0"
-            },
-            "conflict": {
-                "zendframework/zend-validator": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "^2.5",
-                "laminas/laminas-db": "^2.20",
-                "laminas/laminas-filter": "^2.35.2",
-                "laminas/laminas-i18n": "^2.26.0",
-                "laminas/laminas-session": "^2.20",
-                "laminas/laminas-uri": "^2.11.0",
-                "phpunit/phpunit": "^10.5.20",
-                "psalm/plugin-phpunit": "^0.19.0",
-                "psr/http-client": "^1.0.3",
-                "psr/http-factory": "^1.1.0",
-                "vimeo/psalm": "^5.24.0"
-            },
-            "suggest": {
-                "laminas/laminas-db": "Laminas\\Db component, required by the (No)RecordExists validator",
-                "laminas/laminas-filter": "Laminas\\Filter component, required by the Digits validator",
-                "laminas/laminas-i18n": "Laminas\\I18n component to allow translation of validation error messages",
-                "laminas/laminas-i18n-resources": "Translations of validator messages",
-                "laminas/laminas-servicemanager": "Laminas\\ServiceManager component to allow using the ValidatorPluginManager and validator chains",
-                "laminas/laminas-session": "Laminas\\Session component, ^2.8; required by the Csrf validator",
-                "laminas/laminas-uri": "Laminas\\Uri component, required by the Uri and Sitemap\\Loc validators",
-                "psr/http-message": "psr/http-message, required when validating PSR-7 UploadedFileInterface instances via the Upload and UploadFile validators"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "component": "Laminas\\Validator",
-                    "config-provider": "Laminas\\Validator\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\Validator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Validation classes for a wide range of domains, and the ability to chain validators to create complex validation criteria",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "laminas",
-                "validator"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-validator/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-validator/issues",
-                "rss": "https://github.com/laminas/laminas-validator/releases.atom",
-                "source": "https://github.com/laminas/laminas-validator"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-06-16T14:38:00+00:00"
+            "time": "2025-08-23T21:21:41+00:00"
         },
         {
             "name": "league/flysystem",
-            "version": "3.30.0",
+            "version": "3.30.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "2203e3151755d874bb2943649dae1eb8533ac93e"
+                "reference": "5966a8ba23e62bdb518dd9e0e665c2dbd4b5b277"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/2203e3151755d874bb2943649dae1eb8533ac93e",
-                "reference": "2203e3151755d874bb2943649dae1eb8533ac93e",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/5966a8ba23e62bdb518dd9e0e665c2dbd4b5b277",
+                "reference": "5966a8ba23e62bdb518dd9e0e665c2dbd4b5b277",
                 "shasum": ""
             },
             "require": {
@@ -1326,22 +564,22 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.30.0"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.30.2"
             },
-            "time": "2025-06-25T13:29:59+00:00"
+            "time": "2025-11-10T17:13:11+00:00"
         },
         {
             "name": "league/flysystem-local",
-            "version": "3.30.0",
+            "version": "3.30.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-local.git",
-                "reference": "6691915f77c7fb69adfb87dcd550052dc184ee10"
+                "reference": "ab4f9d0d672f601b102936aa728801dd1a11968d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/6691915f77c7fb69adfb87dcd550052dc184ee10",
-                "reference": "6691915f77c7fb69adfb87dcd550052dc184ee10",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/ab4f9d0d672f601b102936aa728801dd1a11968d",
+                "reference": "ab4f9d0d672f601b102936aa728801dd1a11968d",
                 "shasum": ""
             },
             "require": {
@@ -1375,9 +613,9 @@
                 "local"
             ],
             "support": {
-                "source": "https://github.com/thephpleague/flysystem-local/tree/3.30.0"
+                "source": "https://github.com/thephpleague/flysystem-local/tree/3.30.2"
             },
-            "time": "2025-05-21T10:34:19+00:00"
+            "time": "2025-11-10T11:23:37+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -1436,223 +674,38 @@
             "time": "2024-09-21T08:32:55+00:00"
         },
         {
-            "name": "loophp/collection",
-            "version": "7.6.1",
+            "name": "marshal/utils",
+            "version": "v0.0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/loophp/collection.git",
-                "reference": "8448fdd1c82e6e72d1edd51f358cea72ba983817"
+                "url": "https://github.com/getmarshal/utils.git",
+                "reference": "ec22012651e01bcd3f9e9413f907e2f0fb83d8ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/loophp/collection/zipball/8448fdd1c82e6e72d1edd51f358cea72ba983817",
-                "reference": "8448fdd1c82e6e72d1edd51f358cea72ba983817",
+                "url": "https://api.github.com/repos/getmarshal/utils/zipball/ec22012651e01bcd3f9e9413f907e2f0fb83d8ba",
+                "reference": "ec22012651e01bcd3f9e9413f907e2f0fb83d8ba",
                 "shasum": ""
-            },
-            "require": {
-                "loophp/iterators": "^3.2.0",
-                "php": ">= 8.1"
-            },
-            "require-dev": {
-                "amphp/parallel-functions": "^1",
-                "doctrine/collections": "^2",
-                "drupol/php-conventions": "^5",
-                "ext-pcov": "*",
-                "infection/infection": "^0.27 || ^0.28 || ^0.29",
-                "loophp/phpunit-iterable-assertions": "^1.0",
-                "phpstan/phpstan-strict-rules": "^1.0",
-                "phpunit/php-code-coverage": "^10",
-                "phpunit/phpunit": "^10",
-                "psr/cache": "^2.0 || 3.0",
-                "symfony/cache": "^6",
-                "vimeo/psalm": "^5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "loophp\\collection\\": "./src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Pol Dellaiera",
-                    "email": "pol.dellaiera@protonmail.com",
-                    "homepage": "https://not-a-number.io",
-                    "role": "author"
-                },
-                {
-                    "name": "Alex Gidei",
-                    "homepage": "https://github.com/AlexandruGG",
-                    "role": "maintainer"
-                }
-            ],
-            "description": "A (memory) friendly, easy, lazy and modular collection class.",
-            "homepage": "https://github.com/loophp/collection",
-            "keywords": [
-                "collection",
-                "generator",
-                "iterator",
-                "yield"
-            ],
-            "support": {
-                "docs": "https://loophp-collection.rtfd.io",
-                "issues": "https://github.com/loophp/collection/issues",
-                "source": "https://github.com/loophp/collection"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/drupol",
-                    "type": "github"
-                }
-            ],
-            "time": "2024-08-27T16:18:05+00:00"
-        },
-        {
-            "name": "loophp/iterators",
-            "version": "3.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/loophp/iterators.git",
-                "reference": "a0ba41c111f9c3eb09642ad9260cd6753edeb3e0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/loophp/iterators/zipball/a0ba41c111f9c3eb09642ad9260cd6753edeb3e0",
-                "reference": "a0ba41c111f9c3eb09642ad9260cd6753edeb3e0",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">= 8.1"
-            },
-            "require-dev": {
-                "drupol/php-conventions": "^5",
-                "ext-pcov": "*",
-                "phpbench/phpbench": "^1.2",
-                "phpstan/phpstan-strict-rules": "^1.0",
-                "phpunit/php-code-coverage": "^10",
-                "phpunit/phpunit": "^10"
-            },
-            "suggest": {
-                "ext-mbstring": "For UTF-8 support in the StringIteratorAggregate."
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "loophp\\iterators\\": "./src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Pol Dellaiera",
-                    "email": "pol.dellaiera@protonmail.com",
-                    "homepage": "https://not-a-number.io",
-                    "role": "author"
-                }
-            ],
-            "description": "The missing PHP iterators.",
-            "homepage": "https://github.com/loophp/iterators",
-            "keywords": [
-                "iterators"
-            ],
-            "support": {
-                "issues": "https://github.com/loophp/iterators/issues",
-                "source": "https://github.com/loophp/iterators"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/drupol",
-                    "type": "github"
-                }
-            ],
-            "time": "2024-08-27T16:04:50+00:00"
-        },
-        {
-            "name": "marshal/eventmanager",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/marshalstack/eventmanager.git",
-                "reference": "eba0ff84942d345c3cd91ab6e77e61f9c12787e3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/marshalstack/eventmanager/zipball/eba0ff84942d345c3cd91ab6e77e61f9c12787e3",
-                "reference": "eba0ff84942d345c3cd91ab6e77e61f9c12787e3",
-                "shasum": ""
-            },
-            "require": {
-                "psr/container": "^1.0",
-                "psr/event-dispatcher": "^1.0"
-            },
-            "provide": {
-                "psr/event-dispatcher-implementation": "1.0.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Marshal\\EventManager\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Collins Pamba",
-                    "email": "collinspamba@outlook.com"
-                }
-            ],
-            "description": "PSR-14 event manager implementation",
-            "support": {
-                "issues": "https://github.com/marshalstack/eventmanager/issues",
-                "source": "https://github.com/marshalstack/eventmanager/tree/master"
-            },
-            "time": "2025-07-28T07:25:21+00:00"
-        },
-        {
-            "name": "marshal/util",
-            "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "../utils",
-                "reference": "390e580e0312cb24446fe61c5ec098d93801f499"
             },
             "require": {
                 "doctrine/dbal": "^4.3",
                 "guzzlehttp/guzzle": "^7.9",
-                "laminas/laminas-config-aggregator": "^1.18",
-                "laminas/laminas-i18n": "^2.30",
-                "laminas/laminas-inputfilter": "^2.33",
-                "laminas/laminas-servicemanager": "^3.23",
                 "league/flysystem": "^3.30",
-                "loophp/collection": "^7.6",
-                "marshal/eventmanager": "dev-master",
-                "mezzio/mezzio-fastroute": "^3.13",
-                "mezzio/mezzio-helpers": "^5.18",
-                "mezzio/mezzio-session": "^1.16",
                 "monolog/monolog": "^3.9",
+                "psr/container": "1.*",
+                "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0",
-                "psr/http-server-middleware": "^1.0",
-                "symfony/console": "^7.3"
+                "psr/http-server-middleware": "^1.0"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Marshal\\Util\\": "src/"
+                    "Marshal\\Utils\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "AGPL-3.0-or-later"
             ],
             "authors": [
                 {
@@ -1661,323 +714,11 @@
                 }
             ],
             "description": "Utilities package for Marshal",
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "mezzio/mezzio-fastroute",
-            "version": "3.13.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mezzio/mezzio-fastroute.git",
-                "reference": "513a636c1ca539e7e687e994f92856cc99358e4a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mezzio/mezzio-fastroute/zipball/513a636c1ca539e7e687e994f92856cc99358e4a",
-                "reference": "513a636c1ca539e7e687e994f92856cc99358e4a",
-                "shasum": ""
-            },
-            "require": {
-                "fig/http-message-util": "^1.1.2",
-                "laminas/laminas-stdlib": "^3.19.0",
-                "mezzio/mezzio-router": "^3.14 || ^4.0.1",
-                "nikic/fast-route": "^1.2",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-                "psr/container": "^1.0 || ^2.0",
-                "psr/http-message": "^1.0.1 || ^2.0.0"
-            },
-            "conflict": {
-                "container-interop/container-interop": "<1.2.0",
-                "zendframework/zend-expressive-fastroute": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "~3.0.1",
-                "laminas/laminas-diactoros": "^3.5.0",
-                "laminas/laminas-stratigility": "^4.1.0",
-                "mikey179/vfsstream": "^1.6.12",
-                "phpunit/phpunit": "^10.5.45",
-                "psalm/plugin-phpunit": "^0.19.5",
-                "vimeo/psalm": "^6.10.1"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "config-provider": "Mezzio\\Router\\FastRouteRouter\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Mezzio\\Router\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "FastRoute integration for Mezzio",
-            "homepage": "https://mezzio.dev",
-            "keywords": [
-                "FastRoute",
-                "http",
-                "laminas",
-                "mezzio",
-                "middleware",
-                "psr",
-                "psr-7"
-            ],
             "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.mezzio.dev/mezzio/features/router/fast-route/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/mezzio/mezzio-fastroute/issues",
-                "rss": "https://github.com/mezzio/mezzio-fastroute/releases.atom",
-                "source": "https://github.com/mezzio/mezzio-fastroute"
+                "issues": "https://github.com/getmarshal/utils/issues",
+                "source": "https://github.com/getmarshal/utils/tree/v0.0.3"
             },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-04-27T12:05:55+00:00"
-        },
-        {
-            "name": "mezzio/mezzio-helpers",
-            "version": "5.18.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mezzio/mezzio-helpers.git",
-                "reference": "8d76502e4d71aff178f2084eadd71d12fe737d3c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mezzio/mezzio-helpers/zipball/8d76502e4d71aff178f2084eadd71d12fe737d3c",
-                "reference": "8d76502e4d71aff178f2084eadd71d12fe737d3c",
-                "shasum": ""
-            },
-            "require": {
-                "mezzio/mezzio-router": "^3.0 || ^4.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-                "psr/container": "^1.0 || ^2.0",
-                "psr/http-message": "^1.0.1 || ^2.0.0",
-                "psr/http-server-middleware": "^1.0"
-            },
-            "conflict": {
-                "amphp/amp": "<2.6.4",
-                "amphp/dns": "<2.1.2",
-                "amphp/socket": "<2.3.1",
-                "zendframework/zend-expressive-helpers": "*"
-            },
-            "require-dev": {
-                "ext-json": "*",
-                "laminas/laminas-coding-standard": "~3.0.1",
-                "laminas/laminas-diactoros": "^3.5",
-                "phpunit/phpunit": "^10.5.45",
-                "psalm/plugin-phpunit": "^0.19.5",
-                "vimeo/psalm": "^6.10.1"
-            },
-            "suggest": {
-                "ext-json": "If you wish to use the JsonStrategy with BodyParamsMiddleware"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "config-provider": "Mezzio\\Helper\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Mezzio\\Helper\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Helper/Utility classes for Mezzio",
-            "homepage": "https://mezzio.dev",
-            "keywords": [
-                "http",
-                "laminas",
-                "mezzio",
-                "middleware",
-                "psr",
-                "psr-7"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.mezzio.dev/mezzio/features/helpers/intro/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/mezzio/mezzio-helpers/issues",
-                "rss": "https://github.com/mezzio/mezzio-helpers/releases.atom",
-                "source": "https://github.com/mezzio/mezzio-helpers"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-04-27T08:59:18+00:00"
-        },
-        {
-            "name": "mezzio/mezzio-router",
-            "version": "4.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mezzio/mezzio-router.git",
-                "reference": "851fb024aa9ebd9690450f838d63e0368d188aa7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mezzio/mezzio-router/zipball/851fb024aa9ebd9690450f838d63e0368d188aa7",
-                "reference": "851fb024aa9ebd9690450f838d63e0368d188aa7",
-                "shasum": ""
-            },
-            "require": {
-                "fig/http-message-util": "^1.1.5",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-                "psr/container": "^1.1.2 || ^2.0",
-                "psr/http-factory": "^1.0.2",
-                "psr/http-message": "^1.0.1 || ^2.0.0",
-                "psr/http-server-middleware": "^1.0.2",
-                "webmozart/assert": "^1.11"
-            },
-            "conflict": {
-                "mezzio/mezzio": "<3.5",
-                "zendframework/zend-expressive-router": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "~3.0.1",
-                "laminas/laminas-diactoros": "^3.5.0",
-                "laminas/laminas-servicemanager": "^4.4.0",
-                "laminas/laminas-stratigility": "^4.1.0",
-                "phpunit/phpunit": "^10.5.45",
-                "psalm/plugin-phpunit": "^0.19.5",
-                "vimeo/psalm": "^6.10.1"
-            },
-            "suggest": {
-                "mezzio/mezzio-fastroute": "^3.0 to use the FastRoute routing adapter",
-                "mezzio/mezzio-laminasrouter": "^3.0 to use the laminas-router routing adapter"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "config-provider": "Mezzio\\Router\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Mezzio\\Router\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Router subcomponent for Mezzio",
-            "homepage": "https://mezzio.dev",
-            "keywords": [
-                "http",
-                "laminas",
-                "mezzio",
-                "middleware",
-                "psr",
-                "psr-7"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.mezzio.dev/mezzio/features/router/intro/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/mezzio/mezzio-router/issues",
-                "rss": "https://github.com/mezzio/mezzio-router/releases.atom",
-                "source": "https://github.com/mezzio/mezzio-router"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-04-27T09:36:28+00:00"
-        },
-        {
-            "name": "mezzio/mezzio-session",
-            "version": "1.16.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mezzio/mezzio-session.git",
-                "reference": "b58dc7ad0c895a109e7849c3f2f991120eb8b61d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mezzio/mezzio-session/zipball/b58dc7ad0c895a109e7849c3f2f991120eb8b61d",
-                "reference": "b58dc7ad0c895a109e7849c3f2f991120eb8b61d",
-                "shasum": ""
-            },
-            "require": {
-                "dflydev/fig-cookies": "^3.0",
-                "ext-json": "*",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-                "psr/container": "^1.0 || ^2.0",
-                "psr/http-server-middleware": "^1.0"
-            },
-            "conflict": {
-                "zendframework/zend-expressive-session": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "~2.5.0",
-                "laminas/laminas-diactoros": "^3.4.0",
-                "phpunit/phpunit": "^10.5.36",
-                "psalm/plugin-phpunit": "^0.19.0",
-                "vimeo/psalm": "^5.26.1"
-            },
-            "suggest": {
-                "mezzio/mezzio-csrf": "^1.0 || ^1.0-dev for CSRF protection capabilities",
-                "mezzio/mezzio-flash": "^1.0 || ^1.0-dev for flash message capabilities",
-                "mezzio/mezzio-session-ext": "^1.0 || ^1.0-dev for an ext-session persistence adapter"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "config-provider": "Mezzio\\Session\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Mezzio\\Session\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Session container and middleware for PSR-7 applications",
-            "homepage": "https://mezzio.dev",
-            "keywords": [
-                "laminas",
-                "mezzio",
-                "middleware",
-                "psr-7",
-                "session"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.mezzio.dev/mezzio-session/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/mezzio/mezzio-session/issues",
-                "rss": "https://github.com/mezzio/mezzio-session/releases.atom",
-                "source": "https://github.com/mezzio/mezzio-session"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2024-10-16T21:28:57+00:00"
+            "time": "2025-12-10T11:58:06+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -2081,172 +822,6 @@
                 }
             ],
             "time": "2025-03-24T10:02:05+00:00"
-        },
-        {
-            "name": "nikic/fast-route",
-            "version": "v1.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nikic/FastRoute.git",
-                "reference": "181d480e08d9476e61381e04a71b34dc0432e812"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nikic/FastRoute/zipball/181d480e08d9476e61381e04a71b34dc0432e812",
-                "reference": "181d480e08d9476e61381e04a71b34dc0432e812",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.8.35|~5.7"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "src/functions.php"
-                ],
-                "psr-4": {
-                    "FastRoute\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Nikita Popov",
-                    "email": "nikic@php.net"
-                }
-            ],
-            "description": "Fast request router for PHP",
-            "keywords": [
-                "router",
-                "routing"
-            ],
-            "support": {
-                "issues": "https://github.com/nikic/FastRoute/issues",
-                "source": "https://github.com/nikic/FastRoute/tree/master"
-            },
-            "time": "2018-02-13T20:26:39+00:00"
-        },
-        {
-            "name": "nikic/php-parser",
-            "version": "v5.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "221b0d0fdf1369c71047ad1d18bb5880017bbc56"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/221b0d0fdf1369c71047ad1d18bb5880017bbc56",
-                "reference": "221b0d0fdf1369c71047ad1d18bb5880017bbc56",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "ext-json": "*",
-                "ext-tokenizer": "*",
-                "php": ">=7.4"
-            },
-            "require-dev": {
-                "ircmaxell/php-yacc": "^0.0.7",
-                "phpunit/phpunit": "^9.0"
-            },
-            "bin": [
-                "bin/php-parse"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PhpParser\\": "lib/PhpParser"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Nikita Popov"
-                }
-            ],
-            "description": "A PHP parser written in PHP",
-            "keywords": [
-                "parser",
-                "php"
-            ],
-            "support": {
-                "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.6.0"
-            },
-            "time": "2025-07-27T20:03:57+00:00"
-        },
-        {
-            "name": "phpstan/phpstan",
-            "version": "2.1.22",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "41600c8379eb5aee63e9413fe9e97273e25d57e4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/41600c8379eb5aee63e9413fe9e97273e25d57e4",
-                "reference": "41600c8379eb5aee63e9413fe9e97273e25d57e4",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.4|^8.0"
-            },
-            "conflict": {
-                "phpstan/phpstan-shim": "*"
-            },
-            "bin": [
-                "phpstan",
-                "phpstan.phar"
-            ],
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "PHPStan - PHP Static Analysis Tool",
-            "keywords": [
-                "dev",
-                "static analysis"
-            ],
-            "support": {
-                "docs": "https://phpstan.org/user-guide/getting-started",
-                "forum": "https://github.com/phpstan/phpstan/discussions",
-                "issues": "https://github.com/phpstan/phpstan/issues",
-                "security": "https://github.com/phpstan/phpstan/security/policy",
-                "source": "https://github.com/phpstan/phpstan-src"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/ondrejmirtes",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/phpstan",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-08-04T19:17:37+00:00"
         },
         {
             "name": "psr/cache",
@@ -2763,104 +1338,6 @@
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
-            "name": "symfony/console",
-            "version": "v7.3.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/console.git",
-                "reference": "5f360ebc65c55265a74d23d7fe27f957870158a1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/5f360ebc65c55265a74d23d7fe27f957870158a1",
-                "reference": "5f360ebc65c55265a74d23d7fe27f957870158a1",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.2",
-                "symfony/deprecation-contracts": "^2.5|^3",
-                "symfony/polyfill-mbstring": "~1.0",
-                "symfony/service-contracts": "^2.5|^3",
-                "symfony/string": "^7.2"
-            },
-            "conflict": {
-                "symfony/dependency-injection": "<6.4",
-                "symfony/dotenv": "<6.4",
-                "symfony/event-dispatcher": "<6.4",
-                "symfony/lock": "<6.4",
-                "symfony/process": "<6.4"
-            },
-            "provide": {
-                "psr/log-implementation": "1.0|2.0|3.0"
-            },
-            "require-dev": {
-                "psr/log": "^1|^2|^3",
-                "symfony/config": "^6.4|^7.0",
-                "symfony/dependency-injection": "^6.4|^7.0",
-                "symfony/event-dispatcher": "^6.4|^7.0",
-                "symfony/http-foundation": "^6.4|^7.0",
-                "symfony/http-kernel": "^6.4|^7.0",
-                "symfony/lock": "^6.4|^7.0",
-                "symfony/messenger": "^6.4|^7.0",
-                "symfony/process": "^6.4|^7.0",
-                "symfony/stopwatch": "^6.4|^7.0",
-                "symfony/var-dumper": "^6.4|^7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Console\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Eases the creation of beautiful and testable command line interfaces",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "cli",
-                "command-line",
-                "console",
-                "terminal"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/console/tree/v7.3.2"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2025-07-30T17:13:41+00:00"
-        },
-        {
             "name": "symfony/deprecation-contracts",
             "version": "v3.6.0",
             "source": {
@@ -2926,624 +1403,72 @@
                 }
             ],
             "time": "2024-09-25T14:21:43+00:00"
-        },
+        }
+    ],
+    "packages-dev": [
         {
-            "name": "symfony/polyfill-ctype",
-            "version": "v1.32.0",
+            "name": "phpstan/phpstan",
+            "version": "2.1.22",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "a3cc8b044a6ea513310cbd48ef7333b384945638"
+                "url": "https://github.com/phpstan/phpstan.git",
+                "reference": "41600c8379eb5aee63e9413fe9e97273e25d57e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/a3cc8b044a6ea513310cbd48ef7333b384945638",
-                "reference": "a3cc8b044a6ea513310cbd48ef7333b384945638",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/41600c8379eb5aee63e9413fe9e97273e25d57e4",
+                "reference": "41600c8379eb5aee63e9413fe9e97273e25d57e4",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2"
+                "php": "^7.4|^8.0"
             },
-            "provide": {
-                "ext-ctype": "*"
+            "conflict": {
+                "phpstan/phpstan-shim": "*"
             },
-            "suggest": {
-                "ext-ctype": "For best performance"
-            },
+            "bin": [
+                "phpstan",
+                "phpstan.phar"
+            ],
             "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
             "autoload": {
                 "files": [
                     "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Ctype\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill for ctype functions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "ctype",
-                "polyfill",
-                "portable"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.32.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2024-09-09T11:45:10+00:00"
-        },
-        {
-            "name": "symfony/polyfill-intl-grapheme",
-            "version": "v1.32.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-intl-grapheme.git",
-                "reference": "b9123926e3b7bc2f98c02ad54f6a4b02b91a8abe"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-intl-grapheme/zipball/b9123926e3b7bc2f98c02ad54f6a4b02b91a8abe",
-                "reference": "b9123926e3b7bc2f98c02ad54f6a4b02b91a8abe",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "suggest": {
-                "ext-intl": "For best performance"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Intl\\Grapheme\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill for intl's grapheme_* functions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "grapheme",
-                "intl",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.32.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2024-09-09T11:45:10+00:00"
-        },
-        {
-            "name": "symfony/polyfill-intl-normalizer",
-            "version": "v1.32.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-intl-normalizer.git",
-                "reference": "3833d7255cc303546435cb650316bff708a1c75c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-intl-normalizer/zipball/3833d7255cc303546435cb650316bff708a1c75c",
-                "reference": "3833d7255cc303546435cb650316bff708a1c75c",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "suggest": {
-                "ext-intl": "For best performance"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Intl\\Normalizer\\": ""
-                },
-                "classmap": [
-                    "Resources/stubs"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill for intl's Normalizer class and related functions",
-            "homepage": "https://symfony.com",
+            "description": "PHPStan - PHP Static Analysis Tool",
             "keywords": [
-                "compatibility",
-                "intl",
-                "normalizer",
-                "polyfill",
-                "portable",
-                "shim"
+                "dev",
+                "static analysis"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.32.0"
+                "docs": "https://phpstan.org/user-guide/getting-started",
+                "forum": "https://github.com/phpstan/phpstan/discussions",
+                "issues": "https://github.com/phpstan/phpstan/issues",
+                "security": "https://github.com/phpstan/phpstan/security/policy",
+                "source": "https://github.com/phpstan/phpstan-src"
             },
             "funding": [
                 {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
+                    "url": "https://github.com/ondrejmirtes",
                     "type": "github"
                 },
                 {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2024-09-09T11:45:10+00:00"
-        },
-        {
-            "name": "symfony/polyfill-mbstring",
-            "version": "v1.32.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "6d857f4d76bd4b343eac26d6b539585d2bc56493"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/6d857f4d76bd4b343eac26d6b539585d2bc56493",
-                "reference": "6d857f4d76bd4b343eac26d6b539585d2bc56493",
-                "shasum": ""
-            },
-            "require": {
-                "ext-iconv": "*",
-                "php": ">=7.2"
-            },
-            "provide": {
-                "ext-mbstring": "*"
-            },
-            "suggest": {
-                "ext-mbstring": "For best performance"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Mbstring\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill for the Mbstring extension",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "mbstring",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.32.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2024-12-23T08:48:59+00:00"
-        },
-        {
-            "name": "symfony/service-contracts",
-            "version": "v3.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "f021b05a130d35510bd6b25fe9053c2a8a15d5d4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/f021b05a130d35510bd6b25fe9053c2a8a15d5d4",
-                "reference": "f021b05a130d35510bd6b25fe9053c2a8a15d5d4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.1",
-                "psr/container": "^1.1|^2.0",
-                "symfony/deprecation-contracts": "^2.5|^3"
-            },
-            "conflict": {
-                "ext-psr": "<1.1|>=2"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/contracts",
-                    "name": "symfony/contracts"
-                },
-                "branch-alias": {
-                    "dev-main": "3.6-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Contracts\\Service\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Test/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Generic abstractions related to writing services",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "abstractions",
-                "contracts",
-                "decoupling",
-                "interfaces",
-                "interoperability",
-                "standards"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/v3.6.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2025-04-25T09:37:31+00:00"
-        },
-        {
-            "name": "symfony/string",
-            "version": "v7.3.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/string.git",
-                "reference": "42f505aff654e62ac7ac2ce21033818297ca89ca"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/42f505aff654e62ac7ac2ce21033818297ca89ca",
-                "reference": "42f505aff654e62ac7ac2ce21033818297ca89ca",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.2",
-                "symfony/polyfill-ctype": "~1.8",
-                "symfony/polyfill-intl-grapheme": "~1.0",
-                "symfony/polyfill-intl-normalizer": "~1.0",
-                "symfony/polyfill-mbstring": "~1.0"
-            },
-            "conflict": {
-                "symfony/translation-contracts": "<2.5"
-            },
-            "require-dev": {
-                "symfony/emoji": "^7.1",
-                "symfony/error-handler": "^6.4|^7.0",
-                "symfony/http-client": "^6.4|^7.0",
-                "symfony/intl": "^6.4|^7.0",
-                "symfony/translation-contracts": "^2.5|^3.0",
-                "symfony/var-exporter": "^6.4|^7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "Resources/functions.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Component\\String\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Provides an object-oriented API to strings and deals with bytes, UTF-8 code points and grapheme clusters in a unified way",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "grapheme",
-                "i18n",
-                "string",
-                "unicode",
-                "utf-8",
-                "utf8"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/string/tree/v7.3.2"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2025-07-10T08:47:49+00:00"
-        },
-        {
-            "name": "webimpress/safe-writer",
-            "version": "2.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webimpress/safe-writer.git",
-                "reference": "9d37cc8bee20f7cb2f58f6e23e05097eab5072e6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webimpress/safe-writer/zipball/9d37cc8bee20f7cb2f58f6e23e05097eab5072e6",
-                "reference": "9d37cc8bee20f7cb2f58f6e23e05097eab5072e6",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.3 || ^8.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.5.4",
-                "vimeo/psalm": "^4.7",
-                "webimpress/coding-standard": "^1.2.2"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.2.x-dev",
-                    "dev-develop": "2.3.x-dev",
-                    "dev-release-1.0": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Webimpress\\SafeWriter\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "description": "Tool to write files safely, to avoid race conditions",
-            "keywords": [
-                "concurrent write",
-                "file writer",
-                "race condition",
-                "safe writer",
-                "webimpress"
-            ],
-            "support": {
-                "issues": "https://github.com/webimpress/safe-writer/issues",
-                "source": "https://github.com/webimpress/safe-writer/tree/2.2.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/michalbundyra",
+                    "url": "https://github.com/phpstan",
                     "type": "github"
                 }
             ],
-            "time": "2021-04-19T16:34:45+00:00"
-        },
-        {
-            "name": "webmozart/assert",
-            "version": "1.11.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webmozarts/assert.git",
-                "reference": "11cb2199493b2f8a3b53e7f19068fc6aac760991"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/11cb2199493b2f8a3b53e7f19068fc6aac760991",
-                "reference": "11cb2199493b2f8a3b53e7f19068fc6aac760991",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "php": "^7.2 || ^8.0"
-            },
-            "conflict": {
-                "phpstan/phpstan": "<0.12.20",
-                "vimeo/psalm": "<4.6.1 || 4.6.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^8.5.13"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.10-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Webmozart\\Assert\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bernhard Schussek",
-                    "email": "bschussek@gmail.com"
-                }
-            ],
-            "description": "Assertions to validate method input/output with nice error messages.",
-            "keywords": [
-                "assert",
-                "check",
-                "validate"
-            ],
-            "support": {
-                "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/1.11.0"
-            },
-            "time": "2022-06-03T18:03:27+00:00"
+            "time": "2025-08-04T19:17:37+00:00"
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "marshal/util": 20
-    },
-    "prefer-stable": true,
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},

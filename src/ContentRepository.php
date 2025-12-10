@@ -6,25 +6,25 @@ namespace Marshal\ContentManager;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Marshal\ContentManager\Event\SQLQueryEvent;
-use Marshal\EventManager\EventDispatcherAwareInterface;
-use Marshal\EventManager\EventDispatcherAwareTrait;
-use Marshal\Util\Database\DatabaseAwareInterface;
-use Marshal\Util\Database\DatabaseAwareTrait;
-use Marshal\Util\Database\QueryBuilder;
-use Marshal\Util\Database\Schema\Property;
-use Marshal\Util\Database\Schema\Type;
+use Marshal\Utils\Database\DatabaseAwareInterface;
+use Marshal\Utils\Database\DatabaseAwareTrait;
+use Marshal\Utils\Database\QueryBuilder;
+use Marshal\Utils\Database\Schema\Property;
+use Marshal\Utils\Database\Schema\Type;
 use loophp\collection\Collection;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
-final class ContentRepository implements DatabaseAwareInterface, EventDispatcherAwareInterface
+final class ContentRepository implements DatabaseAwareInterface
 {
     use DatabaseAwareTrait;
-    use EventDispatcherAwareTrait;
 
     private const string OP_SELECT = "where";
     private const string OP_UPDATE = "update";
 
-    public function __construct(private ContentManager $contentManager)
-    {
+    public function __construct(
+        private ContentManager $contentManager,
+        private EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     public function create(Content $content): int|string|null
@@ -95,7 +95,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
             $queryBuilder->addOrderBy($property, $direction);
         }
 
-        $this->getEventDispatcher()->dispatch(new SQLQueryEvent(
+        $this->eventDispatcher->dispatch(new SQLQueryEvent(
             sql: $queryBuilder->getSQL(),
             params: $queryBuilder->getParameters(),
         ));
@@ -141,7 +141,7 @@ final class ContentRepository implements DatabaseAwareInterface, EventDispatcher
         // apply query arguments
         $this->applyQueryArgs($queryBuilder, $content, $query);
 
-        $this->getEventDispatcher()->dispatch(new SQLQueryEvent(
+        $this->eventDispatcher->dispatch(new SQLQueryEvent(
             sql: $queryBuilder->getSQL(),
             params: $queryBuilder->getParameters(),
         ));

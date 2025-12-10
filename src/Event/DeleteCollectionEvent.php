@@ -8,10 +8,9 @@ declare(strict_types=1);
 
 namespace Marshal\ContentManager\Event;
 
-use Marshal\EventManager\EventParametersTrait;
-
 class DeleteCollectionEvent
 {
+    use ErrorMessagesTrait;
     use EventParametersTrait;
 
     private int $deleteCount = 0;

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Marshal\ContentManager;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Marshal\Util\Database\Schema\Property;
-use Marshal\Util\Database\Schema\Type;
+use Marshal\Utils\Database\Schema\Property;
+use Marshal\Utils\Database\Schema\Type;
 
 final class Content
 {
@@ -53,7 +53,7 @@ final class Content
     }
 
     /**
-     * @return \Marshal\Util\Database\Schema\Property[]
+     * @return \Marshal\Utils\Database\Schema\Property[]
      */
     public function getProperties(): array
     {

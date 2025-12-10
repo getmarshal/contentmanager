@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Marshal\ContentManager\Event;
 
 use Marshal\ContentManager\Content;
-use Marshal\EventManager\EventParametersTrait;
 
 class ReadContentEvent
 {
