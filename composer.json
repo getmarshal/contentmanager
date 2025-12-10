@@ -21,6 +21,6 @@
         "phpstan/phpstan": "^2.1"
     },
     "require": {
-        "marshal/utils": "0.0.4"
+        "marshal/utils": "0.0.5"
     }
 }
