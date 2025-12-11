@@ -5,32 +5,21 @@ declare(strict_types=1);
 namespace Marshal\ContentManager;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Marshal\ContentManager\Event\SQLQueryEvent;
-use Marshal\Utils\Database\DatabaseAwareInterface;
-use Marshal\Utils\Database\DatabaseAwareTrait;
+use Marshal\Utils\Database\DatabaseManager;
 use Marshal\Utils\Database\QueryBuilder;
-use Marshal\Utils\Database\Schema\Property;
-use Marshal\Utils\Database\Schema\Type;
+use Marshal\ContentManager\Schema\Property;
+use Marshal\ContentManager\Schema\Type;
 use loophp\collection\Collection;
-use Psr\EventDispatcher\EventDispatcherInterface;
 
-final class ContentRepository implements DatabaseAwareInterface
+final class ContentRepository
 {
-    use DatabaseAwareTrait;
-
     private const string OP_SELECT = "where";
     private const string OP_UPDATE = "update";
 
-    public function __construct(
-        private ContentManager $contentManager,
-        private EventDispatcherInterface $eventDispatcher
-    ) {
-    }
-
-    public function create(Content $content): int|string|null
+    public static function create(Content $content): int|string|null
     {
         // prepare the query
-        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
+        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->insert($content->getType()->getTable());
 
@@ -56,20 +45,20 @@ final class ContentRepository implements DatabaseAwareInterface
         return $connection->lastInsertId();
     }
 
-    public function delete(Content $content, array $args = []): QueryBuilder
+    public static function delete(Content $content, array $args = []): QueryBuilder
     {
         // build the delete query
-        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
+        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
         // $queryBuilder->delete("{$content->getType()->getTable()} {$content->getType()->getTable()}");
-        // $this->applyQueryArgs($queryBuilder, $content, $args);
+        // self::applyQueryArgs($queryBuilder, $content, $args);
         return $queryBuilder;
     }
 
-    public function filter(ContentQuery $query): Collection
+    public static function filter(ContentQuery $query): Collection
     {
-        $content = $this->contentManager->get($query->getSchema());
-        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
+        $content = ContentManager::get($query->getSchema());
+        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
 
         $table = $content->getType()->getTable();
         $queryBuilder = $connection->createQueryBuilder();
@@ -81,11 +70,11 @@ final class ContentRepository implements DatabaseAwareInterface
                 continue;
             }
 
-            $this->applyRelations($queryBuilder, $property, $table, $duplicates);
+            self::applyRelations($queryBuilder, $property, $table, $duplicates);
         }
 
         // apply query arguments
-        $this->applyQueryArgs($queryBuilder, $content, $query);
+        self::applyQueryArgs($queryBuilder, $content, $query);
 
         foreach ($query->getGroupBy() as $expression) {
             $queryBuilder->addGroupBy($expression);
@@ -94,11 +83,6 @@ final class ContentRepository implements DatabaseAwareInterface
         foreach ($query->getOrderBy() as $property => $direction) {
             $queryBuilder->addOrderBy($property, $direction);
         }
-
-        $this->eventDispatcher->dispatch(new SQLQueryEvent(
-            sql: $queryBuilder->getSQL(),
-            params: $queryBuilder->getParameters(),
-        ));
 
         $iterable = $queryBuilder->setFirstResult($query->getOffset())
             ->setMaxResults($query->getLimit())
@@ -117,13 +101,13 @@ final class ContentRepository implements DatabaseAwareInterface
         });
     }
 
-    public function get(ContentQuery $query): Content
+    public static function get(ContentQuery $query): Content
     {
-        $content = $this->contentManager->get($query->getSchema());
+        $content = ContentManager::get($query->getSchema());
 
         // build the query
         $table = $content->getType()->getTable();
-        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
+        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->select("$table.*")
             ->from($table, $table)
@@ -135,16 +119,11 @@ final class ContentRepository implements DatabaseAwareInterface
                 continue;
             }
 
-            $this->applyRelations($queryBuilder, $property, $table, $duplicates);
+            self::applyRelations($queryBuilder, $property, $table, $duplicates);
         }
 
         // apply query arguments
-        $this->applyQueryArgs($queryBuilder, $content, $query);
-
-        $this->eventDispatcher->dispatch(new SQLQueryEvent(
-            sql: $queryBuilder->getSQL(),
-            params: $queryBuilder->getParameters(),
-        ));
+        self::applyQueryArgs($queryBuilder, $content, $query);
 
         $result = $queryBuilder->executeQuery()->fetchAssociative();
         if (! empty($result)) {
@@ -154,10 +133,10 @@ final class ContentRepository implements DatabaseAwareInterface
         return $content;
     }
 
-    public function update(Content $content, array $data): int|string
+    public static function update(Content $content, array $data): int|string
     {
         // build the delete query
-        $connection = $this->getDatabaseConnection($content->getType()->getDatabase());
+        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->update($content->getType()->getTable());
 
@@ -166,7 +145,7 @@ final class ContentRepository implements DatabaseAwareInterface
             $query->where($key, $value);
         }
 
-        $this->applyQueryArgs(
+        self::applyQueryArgs(
             queryBuilder: $queryBuilder,
             content: $content,
             query: $query,
@@ -183,7 +162,7 @@ final class ContentRepository implements DatabaseAwareInterface
         return $queryBuilder->executeStatement();
     }
 
-    private function applyQueryArgs(
+    protected static function applyQueryArgs(
         QueryBuilder $queryBuilder,
         Content $content,
         ContentQuery $query,
@@ -193,7 +172,7 @@ final class ContentRepository implements DatabaseAwareInterface
         foreach ($query->getWhere() as $name => $value) {
             // potentially modified Property/argument
             if (! $content->hasProperty($name)) {
-                $this->buildModifiedProperty($queryBuilder, $content->getType(), $name, $value);
+                self::buildModifiedProperty($queryBuilder, $content->getType(), $name, $value);
                 continue;
             }
 
@@ -202,7 +181,7 @@ final class ContentRepository implements DatabaseAwareInterface
             if ($value instanceof Content) {
                 $normalizedValue = $value->getAutoId();
             } elseif (\is_array($value) && ! empty($value) && $operation === self::OP_SELECT) {
-                $this->buildArrayValue($queryBuilder, $property, $value);
+                self::buildArrayValue($queryBuilder, $property, $value);
                 continue;
             } else {
                 $normalizedValue = $value;
@@ -234,7 +213,7 @@ final class ContentRepository implements DatabaseAwareInterface
         }
     }
 
-    private function applyRelations(QueryBuilder $queryBuilder, Property $property, string $table, array &$duplicates): void
+    protected static function applyRelations(QueryBuilder $queryBuilder, Property $property, string $table, array &$duplicates): void
     {
         $duplicates[] = $property->getRelation()->getAlias();
 
@@ -261,15 +240,15 @@ final class ContentRepository implements DatabaseAwareInterface
             }
 
             $duplicates[] = $innerProperty->getRelation()->getAlias();
-            $this->applyRelations($queryBuilder, $innerProperty, $property->getRelation()->getAlias(), $duplicates);
+            self::applyRelations($queryBuilder, $innerProperty, $property->getRelation()->getAlias(), $duplicates);
         }
     }
 
-    private function buildArrayValue(QueryBuilder $queryBuilder, Property $property, array $value): void
+    protected static function buildArrayValue(QueryBuilder $queryBuilder, Property $property, array $value): void
     {
         foreach ($value as $key => $subValue) {
             if (\str_contains($key, '__')) {
-                $this->buildModifiedProperty(
+                self::buildModifiedProperty(
                     $queryBuilder,
                     $property->getRelation()->getType(),
                     $key,
@@ -279,12 +258,12 @@ final class ContentRepository implements DatabaseAwareInterface
             }
 
             if ($subValue instanceof Content) {
-                $this->buildScalarValue($queryBuilder, $property, $key, $subValue->getAutoId());
+                self::buildScalarValue($queryBuilder, $property, $key, $subValue->getAutoId());
                 continue;
             }
 
             if (\is_scalar($subValue)) {
-                $this->buildScalarValue($queryBuilder, $property, $key, $subValue);
+                self::buildScalarValue($queryBuilder, $property, $key, $subValue);
                 continue;
             }
 
@@ -294,18 +273,18 @@ final class ContentRepository implements DatabaseAwareInterface
                         continue;
                     }
 
-                    $this->buildArrayValue($queryBuilder, $subProperty, $subValue);
+                    self::buildArrayValue($queryBuilder, $subProperty, $subValue);
                 }
             }
         }
     }
 
-    private function buildModifiedProperty(QueryBuilder $queryBuilder, Type $type, string $arg, mixed $value): void
+    protected static function buildModifiedProperty(QueryBuilder $queryBuilder, Type $type, string $arg, mixed $value): void
     {
         $split = \explode('__', $arg);
         if (\count($split) !== 2) {
             // potentially raw query
-            $this->buildRawWhereQuery($queryBuilder, $arg, $value);
+            self::buildRawWhereQuery($queryBuilder, $arg, $value);
             return;
         }
 
@@ -374,7 +353,7 @@ final class ContentRepository implements DatabaseAwareInterface
         }
     }
 
-    private function buildRawWhereQuery(QueryBuilder $queryBuilder, string $expression, mixed $arg): void
+    protected static function buildRawWhereQuery(QueryBuilder $queryBuilder, string $expression, mixed $arg): void
     {
         if (! \is_array($arg)) {
             return;
@@ -396,7 +375,7 @@ final class ContentRepository implements DatabaseAwareInterface
             }
     }
 
-    private function buildScalarValue(QueryBuilder $queryBuilder, Property $property, string $name, mixed $value): void
+    protected static function buildScalarValue(QueryBuilder $queryBuilder, Property $property, string $name, mixed $value): void
     {
         $queryBuilder->andWhere(
             $queryBuilder->expr()->eq(

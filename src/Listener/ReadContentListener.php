@@ -11,10 +11,6 @@ use Marshal\ContentManager\Event\ReadContentEvent;
 
 class ReadContentListener
 {
-    public function __construct(private ContentRepository $contentRepository)
-    {
-    }
-
     public function onReadCollection(ReadCollectionEvent $event): void
     {
         $query = new ContentQuery($event->getContentIdentifier());
@@ -33,7 +29,8 @@ class ReadContentListener
         if ($event->getToArray()) {
             $query->toArray();
         }
-        $event->setCollection($this->contentRepository->filter($query));
+        
+        $event->setCollection(ContentRepository::filter($query));
     }
 
     public function onReadContent(ReadContentEvent $event): void
@@ -45,6 +42,6 @@ class ReadContentListener
             $query->groupBy($group);
         }
 
-        $event->setContent($this->contentRepository->get($query));
+        $event->setContent(ContentRepository::get($query));
     }
 }

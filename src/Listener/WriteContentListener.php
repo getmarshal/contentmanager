@@ -17,11 +17,8 @@ class WriteContentListener
 {
     private const string CONTENT_LOGGER = 'marshal::content';
 
-    public function __construct(
-        private ContentRepository $contentRepository,
-        private ContentManager $contentManager,
-        private ValidatorPluginManager $validatorPluginManager
-    ) {
+    public function __construct(private ValidatorPluginManager $validatorPluginManager)
+    {
     }
 
     public function onCreateContent(CreateContentEvent $event): void
@@ -30,7 +27,7 @@ class WriteContentListener
             return;
         }
 
-        $content = $this->contentManager->get($event->getContentIdentifier());
+        $content = ContentManager::get($event->getContentIdentifier());
 
         $inputFilter = new ContentInputFilter($content);
         $inputFilter->setData(\array_merge($content->toArray(), $event->getParams()));
@@ -52,7 +49,7 @@ class WriteContentListener
         // hydrate the content with the filtered, validated input
         $content->hydrate($inputFilter->getValues());
 
-        $result = $this->contentRepository->create($content);
+        $result = ContentRepository::create($content);
         if (! \is_numeric($result)) {
             $event->setErrorMessage('create', "Error saving content");
             return;
@@ -66,7 +63,7 @@ class WriteContentListener
     {
         $content = $event->getContent();
 
-        $query = $this->contentRepository->delete($content, [
+        $query = ContentRepository::delete($content, [
             $content->getType()->getAutoIncrement()->getName() => $content->getType()->getAutoIncrement()->getValue(),
         ]);
 
@@ -81,11 +78,11 @@ class WriteContentListener
 
     public function onDeleteCollectionEvent(DeleteCollectionEvent $event): void
     {
-        $content = $this->contentManager->get($event->getContentIdentifier());
+        $content = ContentManager::get($event->getContentIdentifier());
 
         // @todo reject invalid params
 
-        $query = $this->contentRepository->delete($content, $event->getParams());
+        $query = ContentRepository::delete($content, $event->getParams());
 
         $result = $query->executeStatement();
         if (! \is_numeric($result)) {
@@ -132,7 +129,7 @@ class WriteContentListener
             }
         }
 
-        $update = $this->contentRepository->update($content, $inputFilter->getValues());
+        $update = ContentRepository::update($content, $inputFilter->getValues());
         if (! \is_numeric($update) || \intval($update) < 1) {
             $event->setErrorMessage('update', "Error updating content");
             return;

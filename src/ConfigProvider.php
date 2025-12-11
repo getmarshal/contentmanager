@@ -11,21 +11,17 @@ class ConfigProvider
         return [
             "dependencies" => $this->getDependencies(),
             "events" => $this->getEventsConfig(),
+            "validators" => $this->getValidatorsConfig(),
         ];
     }
 
     private function getDependencies(): array
     {
         return [
-            'delegators' => [
-                ContentRepository::class => [
-                    \Marshal\Utils\Database\DatabaseAwareDelegatorFactory::class,
-                ],
+            "invokables" => [
+                Listener\ReadContentListener::class                     => Listener\ReadContentListener::class,
             ],
-            'factories' => [
-                ContentManager::class                                   => ContentManagerFactory::class,
-                ContentRepository::class                                => ContentRepositoryFactory::class,
-                Listener\ReadContentListener::class                     => Listener\ReadContentListenerFactory::class,
+            "factories" => [
                 Listener\WriteContentListener::class                    => Listener\WriteContentListenerFactory::class,
             ],
         ];
@@ -57,6 +53,16 @@ class ConfigProvider
                         'listener' => 'onUpdateContent',
                     ],
                 ],
+            ],
+        ];
+    }
+
+    private function getValidatorsConfig(): array
+    {
+        return [
+            "factories" => [
+                Validator\PropertyConfigValidator::class => Validator\PropertyConfigValidatorFactory::class,
+                Validator\TypeConfigValidator::class => Validator\TypeConfigValidatorFactory::class,
             ],
         ];
     }

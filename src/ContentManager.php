@@ -4,29 +4,79 @@ declare(strict_types=1);
 
 namespace Marshal\ContentManager;
 
-use Marshal\Utils\Database\Schema\SchemaManager;
+use Marshal\Application\Config;
+use Marshal\ContentManager\Exception\InvalidTypeConfigException;
+use Marshal\ContentManager\Exception\InvalidPropertyConfigException;
+use Marshal\ContentManager\Schema\Property;
+use Marshal\ContentManager\Schema\PropertyRelation;
+use Marshal\ContentManager\Schema\Type;
+use Marshal\ContentManager\Validator\PropertyConfigValidator;
+use Marshal\ContentManager\Validator\TypeConfigValidator;
 
 final class ContentManager
 {
-    public function __construct(private SchemaManager $schemaManager)
+    private function __construct()
     {
     }
 
-    public function get($name): Content
+    private function __clone(): void
     {
-        return new Content($this->schemaManager->get($name));
     }
 
-    /**
-     * @return Content[]
-     */
-    public function getAll(): array
+    public static function get($name): Content
     {
-        $content = [];
-        foreach ($this->schemaManager->getAll() as $type) {
-            $content[$type->getIdentifier()] = new Content($type);
+        $schema = Config::get('schema');
+        $typesConfig = $schema['types'] ?? [];
+        
+        // validate the type
+        $typeValidator = new TypeConfigValidator($typesConfig);
+        if (! $typeValidator->isValid($name)) {
+            throw new InvalidTypeConfigException($name, $typeValidator->getMessages());
         }
 
-        return $content;
+        $nameSplit = \explode('::', $name);
+
+        $type = new Type(
+            identifier: $name,
+            database: $nameSplit[0],
+            table: $nameSplit[1],
+            config: $typesConfig[$name]
+        );
+
+        foreach ($typesConfig[$name]['inherits'] ?? [] as $identifier) {
+            $type->addParent(self::get($identifier)->getType());
+        }
+
+        // add type properties
+        $propsConfig = $schema['properties'] ?? [];
+        $propertyValidator = new PropertyConfigValidator($propsConfig);
+        foreach ($typesConfig[$name]['properties'] ?? [] as $identifier => $definition) {
+            if (! $propertyValidator->isValid($identifier)) {
+                throw new InvalidPropertyConfigException($name, $propertyValidator->getMessages());
+            }
+
+            if ($type->hasPropertyIdentifier($identifier)) {
+                $property = $type->getPropertyByIdentifier($identifier);
+                $property->prepareFromDefinition($definition);
+                $type->setProperty($property);
+            } else {
+                $fullDefinition = \array_merge($propsConfig[$identifier], $definition);
+                if (isset($fullDefinition['relation'])) {
+                    $fullDefinition['relation'] = new PropertyRelation(
+                        self::get($fullDefinition['relation']['schema'])->getType(),
+                        $fullDefinition['relation']
+                    );
+                }
+
+                $type->setProperty(new Property($identifier, $fullDefinition));
+            }
+        }
+
+        // remove excluded properties
+        foreach ($typesConfig[$name]['exclude_properties'] ?? [] as $identifier) {
+            $type->removeProperty($identifier);
+        }
+
+        return new Content($type);
     }
 }
