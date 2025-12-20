@@ -8,24 +8,37 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Marshal\Utils\Database\DatabaseManager;
 use Marshal\Utils\Database\QueryBuilder;
 use Marshal\ContentManager\Schema\Property;
-use Marshal\ContentManager\Schema\Type;
 use loophp\collection\Collection;
 
 final class ContentRepository
 {
     private const string OP_SELECT = "where";
     private const string OP_UPDATE = "update";
+    private const string OP_DELETE = "delete";
 
+    /**
+     *
+     * @param Content $content
+     * @return int|string|null
+     */
     public static function create(Content $content): int|string|null
     {
         // prepare the query
-        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
+        $connection = DatabaseManager::getConnection($content->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->insert($content->getType()->getTable());
+        $queryBuilder->insert($content->getTable());
 
         foreach ($content->getProperties() as $property) {
             if ($property->isAutoIncrement()) {
                 continue;
+            }
+
+            if (true === $property->getNotNull() && null === $property->getValue()) {
+                if (\is_callable($property->getDefaultValue())) {
+                    $property->setValue(\call_user_func($property->getDefaultValue()));
+                } else {
+                    $property->setValue($property->getDefaultValue());
+                }
             }
 
             $queryBuilder->setValue(
@@ -45,33 +58,57 @@ final class ContentRepository
         return $connection->lastInsertId();
     }
 
-    public static function delete(Content $content, array $args = []): QueryBuilder
+    /**
+     *
+     * @param Content $content
+     * @param array $args
+     * @return int|string
+     */
+    public static function delete(Content $content, array $args = []): int|string
     {
         // build the delete query
-        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
+        $connection = DatabaseManager::getConnection($content->getDatabase());
+        $table = $content->getTable();
         $queryBuilder = $connection->createQueryBuilder();
-        // $queryBuilder->delete("{$content->getType()->getTable()} {$content->getType()->getTable()}");
-        // self::applyQueryArgs($queryBuilder, $content, $args);
-        return $queryBuilder;
+        $queryBuilder->delete("$table $table");
+
+        // prepare query
+        $query = new ContentQuery($content->getTypeIdentifier());
+        if (empty($args)) {
+            $query->where($content->getAutoIncrement()->getName(), $content->getAutoIncrement()->getValue());
+        } else {
+            foreach ($args as $arg => $value) {
+                $query->where($arg, $value);
+            }
+        }
+
+        self::applyQueryArgs(
+            queryBuilder: $queryBuilder,
+            content: $content,
+            query: $query,
+            platform: $connection->getDatabasePlatform(),
+            operation: self::OP_DELETE,
+        );
+
+        return $queryBuilder->executeStatement();
     }
 
+    /**
+     *
+     * @param ContentQuery $query
+     * @return Collection
+     */
     public static function filter(ContentQuery $query): Collection
     {
         $content = ContentManager::get($query->getSchema());
-        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
+        $connection = DatabaseManager::getConnection($content->getDatabase());
 
-        $table = $content->getType()->getTable();
+        $table = $content->getTable();
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->select("$table.*")->from($table, $table);
+        $queryBuilder->from($table, $table);
 
-        $duplicates = [];
-        foreach ($content->getProperties() as $property) {
-            if (! $property->hasRelation()) {
-                continue;
-            }
-
-            self::applyRelations($queryBuilder, $property, $table, $duplicates);
-        }
+        // apply relations
+        self::applyRelations($content, $queryBuilder, $table);
 
         // apply query arguments
         self::applyQueryArgs($queryBuilder, $content, $query);
@@ -88,7 +125,6 @@ final class ContentRepository
             ->setMaxResults($query->getLimit())
             ->executeQuery()
             ->iterateAssociative();
-
         $platform = $connection->getDatabasePlatform();
         $toArray = $query->getToArray();
 
@@ -101,26 +137,23 @@ final class ContentRepository
         });
     }
 
+    /**
+     *
+     * @param ContentQuery $query
+     * @return Content
+     */
     public static function get(ContentQuery $query): Content
     {
         $content = ContentManager::get($query->getSchema());
 
         // build the query
-        $table = $content->getType()->getTable();
-        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
+        $table = $content->getTable();
+        $connection = DatabaseManager::getConnection($content->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->select("$table.*")
-            ->from($table, $table)
-            ->setMaxResults(1);
+        $queryBuilder->from($table, $table)->setMaxResults(1);
 
-        $duplicates = [];
-        foreach ($content->getProperties() as $property) {
-            if (! $property->hasRelation()) {
-                continue;
-            }
-
-            self::applyRelations($queryBuilder, $property, $table, $duplicates);
-        }
+        // apply relations
+        self::applyRelations($content, $queryBuilder, $table);
 
         // apply query arguments
         self::applyQueryArgs($queryBuilder, $content, $query);
@@ -133,12 +166,18 @@ final class ContentRepository
         return $content;
     }
 
+    /**
+     *
+     * @param Content $content
+     * @param array $data
+     * @return int|string
+     */
     public static function update(Content $content, array $data): int|string
     {
         // build the delete query
-        $connection = DatabaseManager::getConnection($content->getType()->getDatabase());
+        $connection = DatabaseManager::getConnection($content->getDatabase());
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->update($content->getType()->getTable());
+        $queryBuilder->update($content->getTable());
 
         $query = new ContentQuery();
         foreach ($data as $key => $value) {
@@ -155,14 +194,22 @@ final class ContentRepository
 
         // set the where clause using the model primary key
         $queryBuilder->where($queryBuilder->expr()->eq(
-            $content->getType()->getAutoIncrement()->getName(),
-            $queryBuilder->createNamedParameter($content->getAutoId())
+            $content->getAutoIncrement()->getName(),
+            $queryBuilder->createNamedParameter($content->getAutoIncrement()->getValue())
         ));
 
         return $queryBuilder->executeStatement();
     }
 
-    protected static function applyQueryArgs(
+    /**
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param Content $content
+     * @param ContentQuery $query
+     * @param AbstractPlatform $platform
+     * @param string $operation
+     */
+    private static function applyQueryArgs(
         QueryBuilder $queryBuilder,
         Content $content,
         ContentQuery $query,
@@ -172,7 +219,7 @@ final class ContentRepository
         foreach ($query->getWhere() as $name => $value) {
             // potentially modified Property/argument
             if (! $content->hasProperty($name)) {
-                self::buildModifiedProperty($queryBuilder, $content->getType(), $name, $value);
+                self::buildModifiedProperty($queryBuilder, $content, $name, $value);
                 continue;
             }
 
@@ -181,7 +228,7 @@ final class ContentRepository
             if ($value instanceof Content) {
                 $normalizedValue = $value->getAutoId();
             } elseif (\is_array($value) && ! empty($value) && $operation === self::OP_SELECT) {
-                self::buildArrayValue($queryBuilder, $property, $value);
+                self::buildArrayValue($queryBuilder, $content, $property, $value);
                 continue;
             } else {
                 $normalizedValue = $value;
@@ -189,6 +236,7 @@ final class ContentRepository
 
             switch ($operation) {
                 case self::OP_SELECT:
+                case self::OP_DELETE:
                     $queryBuilder->andWhere(
                         $queryBuilder->expr()->eq(
                             $content->getTable() . '.' . $property->getName(),
@@ -213,47 +261,93 @@ final class ContentRepository
         }
     }
 
-    protected static function applyRelations(QueryBuilder $queryBuilder, Property $property, string $table, array &$duplicates): void
-    {
-        $duplicates[] = $property->getRelation()->getAlias();
+    /**
+     *
+     * @param Content $content
+     * @param QueryBuilder $queryBuilder
+     * @param string $table
+     * @param array $duplicates
+     * @param array $relations
+     * @param string $tableAlias
+     */
+    private static function applyRelations(
+        Content $content,
+        QueryBuilder $queryBuilder,
+        string $table,
+        array &$duplicates = [],
+        array &$relations = [],
+        ?string $tableAlias = null
+    ): void {
+        foreach ($content->getProperties() as $property) {
+            if ($property->hasRelation()) {
+                if (! \in_array($property->getIdentifier(), $relations, true)) {
+                    $queryBuilder->leftJoin(
+                        fromAlias: $table,
+                        join: $property->getRelation()->getTable(),
+                        alias: $property->getRelation()->getAlias(),
+                        condition: $content->getTable() . '.' . $property->getName() . '=' . $property->getName() . '.' . $property->getRelationProperty()->getName()
+                    );
+                    $relations[] = $property->getIdentifier();
+                }
 
-        $subSelect = [];
-        foreach ($property->getRelation()->getType()->getProperties() as $subProperty) {
-            $subSelect[] = "'{$subProperty->getName()}', {$property->getRelation()->getAlias()}.{$subProperty->getName()}";
-        }
+                foreach($property->getRelation()->getRelationProperties() as $innerProperty) {
+                    if (\in_array($property->getRelation()->getAlias() . '__' . $innerProperty->getName(), $duplicates, true)) {
+                        continue;
+                    }
 
-        // @todo this is pgsql only!
-        $queryBuilder
-            ->addSelect(\sprintf("JSON_BUILD_OBJECT(%s) AS %s",
-                \implode(', ', $subSelect),
-                $property->getName()
-            ))->leftJoin(
-                fromAlias: $table,
-                join: $property->getRelation()->getType()->getTable(),
-                alias: $property->getRelation()->getAlias(),
-                condition: $table . '.' . $property->getName() . '=' . $property->getName() . '.' . $property->getRelationProperty()->getName()
-            );
+                    $queryBuilder->addSelect(\sprintf(
+                        "%s AS %s",
+                        $property->getRelation()->getAlias() . '.' . $innerProperty->getName(),
+                        $property->getRelation()->getAlias() . '__' . $innerProperty->getName()
+                    ));
+                    $duplicates[] = $property->getRelation()->getAlias() . '__' . $innerProperty->getName();
 
-        foreach($property->getRelation()->getType()->getProperties() as $innerProperty) {
-            if (! $innerProperty->hasRelation() || \in_array($innerProperty->getRelation()->getAlias(), $duplicates, TRUE)) {
-                continue;
+                    if ($innerProperty->hasRelation()) {
+                        $innerContent = $innerProperty->getRelation()->getRelationContent();
+                        $innerRelationAlias = $innerProperty->getRelation()->getAlias();
+                        $duplicates[] = $innerRelationAlias . '__' . $innerProperty->getName();
+
+                        if  (! \in_array($innerProperty->getIdentifier(), $relations, true)) {
+                            $queryBuilder->leftJoin(
+                                fromAlias: $table,
+                                join: $innerProperty->getRelation()->getTable(),
+                                alias: $innerRelationAlias,
+                                condition: $property->getRelation()->getAlias() . '.' . $innerProperty->getName() . '=' . $innerProperty->getName() . '.' . $innerProperty->getRelationProperty()->getName()
+                            );
+                            $relations[] = $innerProperty->getIdentifier();
+                        }
+
+                        self::applyRelations($innerContent, $queryBuilder, $table, $duplicates, $relations, $innerRelationAlias);
+                    }
+                }
+            } else {
+                $alias = isset($tableAlias) ? $tableAlias : $content->getTable();
+                if (\in_array($alias . '__' . $property->getName(), $duplicates, true)) {
+                    continue;
+                }
+
+                $queryBuilder->addSelect(\sprintf(
+                    "%s AS %s",
+                    $alias . '.' . $property->getName(),
+                    $alias . '__' . $property->getName()
+                ));
+                $duplicates[] = $alias . '__' . $property->getName();
             }
-
-            $duplicates[] = $innerProperty->getRelation()->getAlias();
-            self::applyRelations($queryBuilder, $innerProperty, $property->getRelation()->getAlias(), $duplicates);
         }
     }
 
-    protected static function buildArrayValue(QueryBuilder $queryBuilder, Property $property, array $value): void
+    /**
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param Content $content
+     * @param Property $property
+     * @param array $value
+     */
+    private static function buildArrayValue(QueryBuilder $queryBuilder, Content $content, Property $property, array $value): void
     {
         foreach ($value as $key => $subValue) {
             if (\str_contains($key, '__')) {
-                self::buildModifiedProperty(
-                    $queryBuilder,
-                    $property->getRelation()->getType(),
-                    $key,
-                    $subValue
-                );
+                self::buildModifiedProperty($queryBuilder, $content, $key, $subValue, $property);
                 continue;
             }
 
@@ -268,20 +362,33 @@ final class ContentRepository
             }
 
             if (\is_array($subValue)) {
-                foreach ($property->getRelation()->getType()->getProperties() as $subProperty) {
+                foreach ($property->getRelation()->getRelationProperties() as $subProperty) {
                     if ($subProperty->getName() !== $key) {
                         continue;
                     }
 
-                    self::buildArrayValue($queryBuilder, $subProperty, $subValue);
+                    self::buildArrayValue($queryBuilder, $content, $subProperty, $subValue);
                 }
             }
         }
     }
 
-    protected static function buildModifiedProperty(QueryBuilder $queryBuilder, Type $type, string $arg, mixed $value): void
-    {
+    /**
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param Content $content
+     * @param string $arg
+     * @param mixed $value
+     */
+    private static function buildModifiedProperty(
+        QueryBuilder $queryBuilder,
+        Content $content,
+        string $arg,
+        mixed $value,
+        ?Property $property = null
+    ): void {
         $split = \explode('__', $arg);
+        // @todo instead of count use property name
         if (\count($split) !== 2) {
             // potentially raw query
             self::buildRawWhereQuery($queryBuilder, $arg, $value);
@@ -290,7 +397,7 @@ final class ContentRepository
 
         $modifiers = ['gt', 'gte', 'in', 'isnull', 'lt', 'lte', 'notin'];
         if (! \in_array(\strtolower($split[1]), $modifiers, true)) {
-            if ($type->hasProperty($split[0])) {
+            if ($content->hasProperty($split[0])) {
                 $queryBuilder->andWhere(
                     $queryBuilder->expr()->eq("$split[0].$split[1]", $queryBuilder->createNamedParameter((string) $value))
                 );
@@ -298,8 +405,23 @@ final class ContentRepository
             }
         }
 
-        $table = $type->getTable();
-        $column = "$table.$split[0]";
+        $name = $split[0];
+        if (! $content->hasProperty($name)) {
+            if (null === $property) {
+                return;
+            }
+
+            $tableName = $property->hasRelation()
+                ? $property->getRelation()->getAlias()
+                : $property->getName();
+        } else {
+            $property = $content->getProperty($name);
+            $tableName = $property->hasRelation()
+                ? $property->getName()
+                : $content->getTable();
+        }
+
+        $column = "$tableName.$name";
         switch (\strtolower($split[1])) {
             case 'gt':
                 $queryBuilder->andWhere($queryBuilder->expr()->gt(
@@ -353,29 +475,42 @@ final class ContentRepository
         }
     }
 
-    protected static function buildRawWhereQuery(QueryBuilder $queryBuilder, string $expression, mixed $arg): void
+    /**
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param string $expression
+     * @param mixed $arg
+     */
+    private static function buildRawWhereQuery(QueryBuilder $queryBuilder, string $expression, mixed $arg): void
     {
         if (! \is_array($arg)) {
             return;
         }
 
         $queryBuilder->andWhere($expression);
-            foreach ($arg as $key => $value) {
-                if ($value instanceof Content) {
-                    $queryBuilder->setParameter($key, $value->getType()->getAutoIncrement()->getValue());
-                    continue;
-                }
-
-                if (\is_scalar($value)) {
-                    $queryBuilder->setParameter($key, $value);
-                }
-
-                // @todo throw exception if value is not an instance of Content, and not a scalar
-                // possibly check $content for presence of $key property first
+        foreach ($arg as $key => $value) {
+            if ($value instanceof Content) {
+                $queryBuilder->setParameter($key, $value->getAutoId());
+                continue;
             }
+
+            if (\is_scalar($value)) {
+                $queryBuilder->setParameter($key, $value);
+            }
+
+            // @todo throw exception if value is not an instance of Content, and not a scalar
+            // possibly check $content for presence of $key property first
+        }
     }
 
-    protected static function buildScalarValue(QueryBuilder $queryBuilder, Property $property, string $name, mixed $value): void
+    /**
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param Property $property
+     * @param string $name
+     * @param mixed $value
+     */
+    private static function buildScalarValue(QueryBuilder $queryBuilder, Property $property, string $name, mixed $value): void
     {
         $queryBuilder->andWhere(
             $queryBuilder->expr()->eq(

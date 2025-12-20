@@ -12,6 +12,8 @@ use Marshal\ContentManager\Event\DeleteCollectionEvent;
 use Marshal\ContentManager\Event\DeleteContentEvent;
 use Marshal\ContentManager\Event\UpdateContentEvent;
 use Marshal\ContentManager\InputFilter\ContentInputFilter;
+use Marshal\Utils\Logger\LoggerManager;
+use Marshal\ContentManager\Content;
 
 class WriteContentListener
 {
@@ -28,7 +30,6 @@ class WriteContentListener
         }
 
         $content = ContentManager::get($event->getContentIdentifier());
-
         $inputFilter = new ContentInputFilter($content);
         $inputFilter->setData(\array_merge($content->toArray(), $event->getParams()));
         if (! $inputFilter->isValid()) {
@@ -37,7 +38,7 @@ class WriteContentListener
         }
 
         // additional validators
-        foreach ($content->getType()->getValidators() as $name => $options) {
+        foreach ($content->getValidators() as $name => $options) {
             $options['__operation'] = 'create';
             $validator = $this->validatorPluginManager->get($name, $options);
             if (! $validator->isValid($inputFilter->getValues())) {
@@ -47,15 +48,15 @@ class WriteContentListener
         }
 
         // hydrate the content with the filtered, validated input
-        $content->hydrate($inputFilter->getValues());
-
+        $data = $this->normalizeInput($content, $inputFilter->getValues());
+        $content->hydrate($data);
         $result = ContentRepository::create($content);
         if (! \is_numeric($result)) {
             $event->setErrorMessage('create', "Error saving content");
             return;
         }
 
-        $content->getType()->getAutoIncrement()->setValue(\intval($result));
+        $content->getAutoIncrement()->setValue(\intval($result));
         $event->setContent($content);
     }
 
@@ -63,11 +64,7 @@ class WriteContentListener
     {
         $content = $event->getContent();
 
-        $query = ContentRepository::delete($content, [
-            $content->getType()->getAutoIncrement()->getName() => $content->getType()->getAutoIncrement()->getValue(),
-        ]);
-
-        $result = $query->executeStatement();
+        $result = ContentRepository::delete($content);
         if (! \is_numeric($result)) {
             $event->setErrorMessage('error', "Error deleting content");
             return;
@@ -82,11 +79,9 @@ class WriteContentListener
 
         // @todo reject invalid params
 
-        $query = ContentRepository::delete($content, $event->getParams());
-
-        $result = $query->executeStatement();
+        $result = ContentRepository::delete($content, $event->getParams());
         if (! \is_numeric($result)) {
-            $event->setErrorMessage('error', "Error deleting content");
+            $event->setErrorMessage('error', "Error deleting collection");
             return;
         }
 
@@ -120,7 +115,7 @@ class WriteContentListener
         }
 
         // additional validators
-        foreach ($content->getType()->getValidators() as $name => $options) {
+        foreach ($content->getValidators() as $name => $options) {
             $options['__operation'] = 'update';
             $validator = $this->validatorPluginManager->get($name, $options);
             if (! $validator->isValid($inputFilter->getValues())) {
@@ -135,7 +130,19 @@ class WriteContentListener
             return;
         }
 
-        $content->hydrate($inputFilter->getValues());
+        $content->hydrate($this->normalizeInput($content, $inputFilter->getValues()));
         $event->setIsSuccess(TRUE);
+    }
+
+    private function normalizeInput(Content $content, array $input): array
+    {
+        $data = [];
+        foreach ($input as $key => $value) {
+            if ($content->hasProperty($key)) {
+                $data["{$content->getTable()}__$key"] = $value;
+            }
+        }
+
+        return $data;
     }
 }

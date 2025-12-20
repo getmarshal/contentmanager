@@ -14,7 +14,7 @@ class ReadCollectionEvent
     private Collection $collection;
     private bool $toArray = false;
 
-    public function __construct(private string $contentIdentifier, array $params = [])
+    public function __construct(private readonly string $contentIdentifier, array $params = [])
     {
         $this->collection = Collection::empty();
         $this->setParams($params);

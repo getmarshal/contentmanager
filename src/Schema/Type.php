@@ -7,11 +7,6 @@ namespace Marshal\ContentManager\Schema;
 final class Type
 {
     /**
-     * @return array<Type>
-     */
-    private array $parents = [];
-
-    /**
      * @var array<Property>
      */
     private array $properties = [];
@@ -26,13 +21,12 @@ final class Type
 
     public function addParent(Type $type): static
     {
-        $this->parents[$type->getName()] = $type;
         foreach ($type->getProperties() as $property) {
             if ($this->hasProperty($property->getName())) {
                 continue;
             }
 
-            $this->properties[$property->getName()] = $property;
+            $this->setProperty($property);
         }
 
         return $this;
@@ -79,17 +73,23 @@ final class Type
         return $this->config["name"];
     }
 
-    public function getParents(): array
-    {
-        return $this->parents;
-    }
-
     /**
      * @return array<Property>
      */
     public function getProperties(): array
     {
         return $this->properties;
+    }
+
+    public function getProperty(string $name): Property
+    {
+        if (! $this->hasProperty($name)) {
+            throw new \InvalidArgumentException(
+                "Property $name does not exist"
+            );
+        }
+
+        return $this->properties[$name];
     }
 
     public function getPropertyByIdentifier(string $identifier): Property
@@ -135,7 +135,7 @@ final class Type
         return isset($this->properties[$name]);
     }
 
-    public function hasPropertyIdentifier(string $identifier): bool
+    public function hasPropertyByIdentifier(string $identifier): bool
     {
         foreach ($this->getProperties() as $property) {
             if ($identifier === $property->getIdentifier()) {
@@ -151,7 +151,7 @@ final class Type
         return isset($this->config['routing']['route_prefix']);
     }
 
-    public function removeProperty(string $identifier): static
+    public function removePropertyByIdentifier(string $identifier): static
     {
         foreach ($this->getProperties() as $name => $property) {
             if ($identifier !== $property->getIdentifier()) {
