@@ -17,10 +17,13 @@
     "config": {
         "sort-packages": true
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "marshal/database": "dev-master",
+        "marshal/utils": "dev-master"
+    },
     "require-dev": {
         "phpstan/phpstan": "^2.1"
-    },
-    "require": {
-        "marshal/utils": "0.0.5"
     }
 }

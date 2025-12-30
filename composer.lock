@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "97039695213b959c97d9d3e5be62a580",
+    "content-hash": "c5f0e962c6bc6bd4f123a33889a6fd42",
     "packages": [
         {
             "name": "doctrine/dbal",
@@ -1200,6 +1200,37 @@
             "time": "2024-08-27T16:04:50+00:00"
         },
         {
+            "name": "marshal/database",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "/home/ketedrum/projects/marshal/database",
+                "reference": "9f94b9ff0406aea892d8fb2b215516ab69753c8b"
+            },
+            "require": {
+                "doctrine/dbal": "^4.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Marshal\\Database\\": "src/"
+                }
+            },
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Collins Pamba",
+                    "email": "collinspamba@outlook.com"
+                }
+            ],
+            "description": "Database package for Marshal",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
             "name": "marshal/utils",
             "version": "v0.0.5",
             "source": {
@@ -1994,9 +2025,11 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": {},
-    "prefer-stable": false,
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "marshal/database": 20
+    },
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
