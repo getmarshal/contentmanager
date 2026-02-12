@@ -2,36 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Marshal\ContentManager\SchemaConfig;
+namespace Marshal\ContentManager\Config;
 
+use Marshal\ContentManager\Schema\Content;
 use Marshal\Utils\Random;
 
-final class ThingSchema
+final class ContentSchema
 {
-    public const string PROPERTY_AUTO_ID = "thing::id";
-    public const string PROPERTY_NAME = "thing::name";
-    public const string PROPERTY_ALIAS = "thing::alias";
-    public const string PROPERTY_DESCRIPTION = "thing::description";
-    public const string PROPERTY_URL = "thing::url";
-    public const string PROPERTY_IMAGE = "thing::image";
-    public const string PROPERTY_CREATED_AT = "thing::created_at";
-    public const string PROPERTY_UNIQUE_TAG = "thing::unique_tag";
-    public const string PROPERTY_UPDATED_AT = "thing::updated_at";
-
     public function __invoke(): array
     {
         return [
             "schema" => [
                 "properties" => [
-                    self::PROPERTY_AUTO_ID => $this->getPropertyId(),
-                    self::PROPERTY_NAME => $this->getPropertyName(),
-                    self::PROPERTY_ALIAS => $this->getPropertyAlias(),
-                    self::PROPERTY_DESCRIPTION => $this->getPropertyDescription(),
-                    self::PROPERTY_URL => $this->getPropertyUrl(),
-                    self::PROPERTY_IMAGE => $this->getPropertyImage(),
-                    self::PROPERTY_UNIQUE_TAG => $this->getPropertyUniqueAlphaNumericTag(),
-                    self::PROPERTY_CREATED_AT => $this->getPropertyCreatedAt(),
-                    self::PROPERTY_UPDATED_AT => $this->getPropertyUpdatedAt(),
+                    Content::ID => $this->getPropertyId(),
+                    Content::NAME => $this->getPropertyName(),
+                    Content::ALIAS => $this->getPropertyAlias(),
+                    Content::DESCRIPTION => $this->getPropertyDescription(),
+                    Content::URL => $this->getPropertyUrl(),
+                    Content::IMAGE => $this->getPropertyImage(),
+                    Content::TAG => $this->getPropertyUniqueAlphaNumericTag(),
+                    Content::CREATED_AT => $this->getPropertyCreatedAt(),
+                    Content::UPDATED_AT => $this->getPropertyUpdatedAt(),
                 ],
             ],
         ];

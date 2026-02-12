@@ -12,7 +12,7 @@ class ConfigProvider
     public function __invoke(): array
     {
         $aggregator = new ConfigAggregator([
-            SchemaConfig\ThingSchema::class,
+            Config\ContentSchema::class,
             new ArrayProvider([
                 "dependencies" => $this->getDependencies(),
                 "navigation" => ["paths" => $this->getRoutes()],
